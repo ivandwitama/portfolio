@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BTC DCA Proyeksi Investasi</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e17;
+    --surface: #111827;
+    --surface2: #1a2234;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --text: #f0f4ff;
+    --muted: #8896b3;
+    --bull: #00d68f;
+    --normal: #4d9fff;
+    --bear: #ff6b6b;
+    --modal: #a78bfa;
+    --accent: #00d68f;
+    --font-mono: 'Space Mono', monospace;
+    --font-sans: 'DM Sans', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    min-height: 100vh;
+  }
+  /* bg grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+  }
+
+  /* HEADER */
+  .header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .header-left h1 {
+    font-family: var(--font-mono);
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    line-height: 1.2;
+  }
+  .header-left h1 span { color: var(--accent); }
+  .header-left p { color: var(--muted); font-size: 13px; margin-top: 4px; }
+  .header-right {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .badge-tag {
+    font-size: 11px;
+    font-family: var(--font-mono);
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: rgba(0,214,143,0.1);
+    color: var(--accent);
+    border: 1px solid rgba(0,214,143,0.25);
+  }
+
+  /* INPUTS PANEL */
+  .inputs-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.5rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    align-items: end;
+  }
+  .input-group label {
+    display: block;
+    font-size: 11px;
+    font-family: var(--font-mono);
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .input-prefix {
+    position: absolute;
+    left: 10px;
+    font-size: 12px;
+    font-family: var(--font-mono);
+    color: var(--muted);
+    pointer-events: none;
+  }
+  .input-wrap input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 7px;
+    padding: 9px 10px 9px 30px;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .input-wrap input:focus { border-color: var(--accent); }
+  .input-wrap input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+  /* TOGGLE GROUPS */
+  .toggle-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+    align-items: flex-end;
+  }
+  .toggle-group-wrap { display: flex; flex-direction: column; gap: 6px; }
+  .toggle-label {
+    font-size: 11px;
+    font-family: var(--font-mono);
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .toggle-group { display: flex; gap: 4px; }
+  .tbtn {
+    padding: 6px 13px;
+    font-size: 12px;
+    font-family: var(--font-mono);
+    border-radius: 6px;
+    border: 1px solid var(--border2);
+    background: var(--surface);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .tbtn:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+  .tbtn.active { background: rgba(0,214,143,0.12); border-color: var(--accent); color: var(--accent); }
+  .tbtn.active.blue { background: rgba(77,159,255,0.12); border-color: var(--normal); color: var(--normal); }
+  .tbtn.active.red  { background: rgba(255,107,107,0.12); border-color: var(--bear); color: var(--bear); }
+  .tbtn.active.period { background: rgba(167,139,250,0.12); border-color: var(--modal); color: var(--modal); }
+
+  /* METRIC CARDS */
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 10px;
+    margin-bottom: 1.5rem;
+  }
+  .metric-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--card-accent, var(--border));
+  }
+  .metric-card.bull-card { --card-accent: var(--bull); }
+  .metric-card.normal-card { --card-accent: var(--normal); }
+  .metric-card.bear-card { --card-accent: var(--bear); }
+  .metric-card.modal-card { --card-accent: var(--modal); }
+  .mc-label { font-size: 11px; font-family: var(--font-mono); color: var(--muted); letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 6px; }
+  .mc-value { font-size: 15px; font-weight: 600; font-family: var(--font-mono); color: var(--text); line-height: 1.2; }
+  .mc-sub { font-size: 12px; margin-top: 4px; font-family: var(--font-mono); }
+  .mc-sub.pos { color: var(--bull); }
+  .mc-sub.neg { color: var(--bear); }
+  .mc-sub.neu { color: var(--muted); }
+
+  /* CHART */
+  .chart-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem 1.25rem 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .chart-legend {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-family: var(--font-mono);
+    color: var(--muted);
+  }
+  .legend-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+  .chart-wrap { position: relative; width: 100%; height: 300px; }
+
+  /* TABLE */
+  .table-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+  .table-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 11px;
+    font-family: var(--font-mono);
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; font-family: var(--font-mono); }
+  th {
+    text-align: left;
+    padding: 9px 12px;
+    color: var(--muted);
+    font-weight: 400;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+    font-size: 11px;
+    letter-spacing: 0.03em;
+  }
+  td {
+    padding: 8px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    white-space: nowrap;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr.highlight-row td { background: rgba(167,139,250,0.06); }
+  .badge {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .badge-bull { background: rgba(0,214,143,0.12); color: var(--bull); border: 1px solid rgba(0,214,143,0.2); }
+  .badge-normal { background: rgba(77,159,255,0.12); color: var(--normal); border: 1px solid rgba(77,159,255,0.2); }
+  .badge-bear-pos { background: rgba(255,107,107,0.12); color: var(--bear); border: 1px solid rgba(255,107,107,0.2); }
+  .badge-neutral { background: rgba(167,139,250,0.12); color: var(--modal); border: 1px solid rgba(167,139,250,0.2); }
+  .badge-green { background: rgba(0,214,143,0.12); color: var(--bull); border: 1px solid rgba(0,214,143,0.2); }
+  .badge-amber { background: rgba(251,191,36,0.12); color: #fbbf24; border: 1px solid rgba(251,191,36,0.2); }
+  .badge-red { background: rgba(255,107,107,0.12); color: var(--bear); border: 1px solid rgba(255,107,107,0.2); }
+
+  /* FOOTER */
+  .footer {
+    text-align: center;
+    font-size: 11px;
+    font-family: var(--font-mono);
+    color: var(--muted);
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    letter-spacing: 0.03em;
+  }
+  .footer span { color: var(--accent); }
+
+  @media (max-width: 600px) {
+    .header { flex-direction: column; }
+    .inputs-panel { grid-template-columns: 1fr 1fr; }
+    .toggle-row { gap: 0.5rem; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <h1>BTC <span>DCA</span> Proyeksi</h1>
+      <p>Dollar Cost Averaging · Bear / Normal / Bull · 7 bln · 5 thn · 10 thn</p>
+    </div>
+    <div class="header-right">
+      <span class="badge-tag">v1.0</span>
+      <span class="badge-tag">IDR</span>
+    </div>
+  </div>
+
+  <!-- INPUTS -->
+  <div class="inputs-panel">
+    <div class="input-group">
+      <label>Harga BTC (USD)</label>
+      <div class="input-wrap">
+        <span class="input-prefix">$</span>
+        <input type="number" id="inp-btc" value="60000" min="1000" step="1000" oninput="renderAll()">
+      </div>
+    </div>
+    <div class="input-group">
+      <label>Kurs USD/IDR</label>
+      <div class="input-wrap">
+        <span class="input-prefix">Rp</span>
+        <input type="number" id="inp-kurs" value="17500" min="10000" step="100" oninput="renderAll()">
+      </div>
+    </div>
+    <div class="input-group">
+      <label>Investasi / Bulan (IDR)</label>
+      <div class="input-wrap">
+        <span class="input-prefix">Rp</span>
+        <input type="number" id="inp-monthly" value="1500000" min="100000" step="100000" oninput="renderAll()">
+      </div>
+    </div>
+  </div>
+
+  <!-- TOGGLES -->
+  <div class="toggle-row">
+    <div class="toggle-group-wrap">
+      <span class="toggle-label">Periode</span>
+      <div class="toggle-group">
+        <button class="tbtn active period" id="btn-short"  onclick="setPeriod('short')">7 Bulan</button>
+        <button class="tbtn period"        id="btn-5yr"    onclick="setPeriod('5yr')">5 Tahun</button>
+        <button class="tbtn period"        id="btn-10yr"   onclick="setPeriod('10yr')">10 Tahun</button>
+      </div>
+    </div>
+    <div class="toggle-group-wrap">
+      <span class="toggle-label">Skenario</span>
+      <div class="toggle-group">
+        <button class="tbtn active" id="btn-all"    onclick="setScenario('all')">Semua</button>
+        <button class="tbtn"        id="btn-bull"   onclick="setScenario('bull')">Bull</button>
+        <button class="tbtn blue"   id="btn-normal" onclick="setScenario('normal')">Normal</button>
+        <button class="tbtn red"    id="btn-bear"   onclick="setScenario('bear')">Bear</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- METRIC CARDS -->
+  <div class="metrics" id="metrics-row"></div>
+
+  <!-- CHART -->
+  <div class="chart-card">
+    <div class="chart-legend" id="legend-row"></div>
+    <div class="chart-wrap">
+      <canvas id="mainChart"></canvas>
+    </div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-card">
+    <div class="table-header">Detail bulanan</div>
+    <div class="table-wrap">
+      <table id="detail-table"></table>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    Proyeksi bersifat <span>estimasi</span> — bukan rekomendasi investasi · Asumsi kurs konstan
+  </div>
+</div>
+
+<script>
+// ─── CONFIG ───────────────────────────────────────────────
+const PERIOD_MONTHS = { short: 7, '5yr': 60, '10yr': 121 };
+
+// BTC price anchors per skenario (bulan ke-N: harga USD)
+// Dihitung relatif terhadap harga awal (btcStart)
+const SCENARIO_MULTIPLIERS = {
+  bull:   { 0:1, 6:2.17, 12:2.92, 24:5.0, 36:7.5, 48:10.0, 60:13.33, 72:15.0, 84:15.83, 96:16.67, 108:18.33, 120:20.0 },
+  normal: { 0:1, 6:1.37, 12:1.58, 24:2.0, 36:2.5, 48:2.83, 60:3.33, 72:3.67, 84:3.83, 96:4.0, 108:4.17, 120:4.33 },
+  bear:   { 0:1, 6:0.77, 12:0.83, 24:1.08, 36:1.25, 48:1.33, 60:1.50, 72:1.58, 84:1.67, 96:1.75, 108:1.83, 120:1.92 }
+};
+
+const COLORS = { bull: '#00d68f', normal: '#4d9fff', bear: '#ff6b6b' };
+const LABELS = { bull: 'Bull', normal: 'Normal', bear: 'Bear' };
+
+let currentPeriod = 'short';
+let currentScenario = 'all';
+let chartInstance = null;
+
+// ─── HELPERS ──────────────────────────────────────────────
+function getInputs() {
+  return {
+    btcStart:  parseFloat(document.getElementById('inp-btc').value)     || 60000,
+    kurs:      parseFloat(document.getElementById('inp-kurs').value)    || 17500,
+    monthly:   parseFloat(document.getElementById('inp-monthly').value) || 1500000
+  };
+}
+
+function buildMonths(n) {
+  const start = new Date(2026, 6, 1);
+  return Array.from({length: n}, (_, i) => {
+    const d = new Date(start.getFullYear(), start.getMonth() + i, 1);
+    return d.toLocaleString('id-ID', { month: 'short' }) + ' ' + d.getFullYear();
+  });
+}
+
+function buildBtcPrices(scenario, n, btcStart) {
+  const mults = SCENARIO_MULTIPLIERS[scenario];
+  const keys = Object.keys(mults).map(Number).sort((a,b) => a-b);
+  return Array.from({length: n}, (_, i) => {
+    let lo = keys[0], hi = keys[keys.length-1];
+    for (let k = 0; k < keys.length-1; k++) {
+      if (i >= keys[k] && i <= keys[k+1]) { lo = keys[k]; hi = keys[k+1]; break; }
+    }
+    const t = lo === hi ? 0 : (i - lo) / (hi - lo);
+    return Math.round(btcStart * (mults[lo] + (mults[hi] - mults[lo]) * t));
+  });
+}
+
+function calcDCA(btcPrices, monthlyIdr, kurs) {
+  const monthlyUsd = monthlyIdr / kurs;
+  let totalBtc = 0, totalInvested = 0;
+  return btcPrices.map(price => {
+    totalBtc += monthlyUsd / price;
+    totalInvested += monthlyIdr;
+    const portfolioIdr = totalBtc * price * kurs;
+    return {
+      price, totalBtc, totalInvested, portfolioIdr,
+      pnlIdr: portfolioIdr - totalInvested,
+      pnlPct: ((portfolioIdr / totalInvested) - 1) * 100,
+      multiplier: portfolioIdr / totalInvested
+    };
+  });
+}
+
+function fmtB(v) {
+  const n = Math.round(v);
+  if (n >= 1e12) return 'Rp ' + (n/1e12).toFixed(2) + ' T';
+  if (n >= 1e9)  return 'Rp ' + (n/1e9).toFixed(2) + ' M';
+  if (n >= 1e6)  return 'Rp ' + (n/1e6).toFixed(1) + ' jt';
+  return 'Rp ' + n.toLocaleString('id-ID');
+}
+function fmtUsd(v) {
+  if (v >= 1e6) return '$' + (v/1e6).toFixed(2) + 'M';
+  return '$' + Math.round(v).toLocaleString('en-US');
+}
+
+function getScenarios() {
+  return currentScenario === 'all' ? ['bull','normal','bear'] : [currentScenario];
+}
+
+// ─── RENDER METRICS ───────────────────────────────────────
+function renderMetrics() {
+  const { btcStart, kurs, monthly } = getInputs();
+  const n = PERIOD_MONTHS[currentPeriod];
+  const scenarios = getScenarios();
+  const totalInvested = monthly * n;
+  let html = `<div class="metric-card modal-card">
+    <div class="mc-label">Total Modal (${n} bln)</div>
+    <div class="mc-value">${fmtB(totalInvested)}</div>
+    <div class="mc-sub neu">${fmtB(monthly)}/bln · Rp${Math.round(kurs).toLocaleString('id-ID')}</div>
+  </div>`;
+  const cardClass = { bull: 'bull-card', normal: 'normal-card', bear: 'bear-card' };
+  for (const s of scenarios) {
+    const rows = calcDCA(buildBtcPrices(s, n, btcStart), monthly, kurs);
+    const last = rows[rows.length-1];
+    const sign = last.pnlPct >= 0 ? '+' : '';
+    const cls = last.pnlPct >= 0 ? 'pos' : 'neg';
+    html += `<div class="metric-card ${cardClass[s]}">
+      <div class="mc-label">${LABELS[s]} Case</div>
+      <div class="mc-value" style="color:${COLORS[s]}">${fmtB(last.portfolioIdr)}</div>
+      <div class="mc-sub ${cls}">${sign}${last.pnlPct.toFixed(0)}% · ${last.multiplier.toFixed(1)}x modal</div>
+    </div>`;
+  }
+  document.getElementById('metrics-row').innerHTML = html;
+}
+
+// ─── RENDER LEGEND ────────────────────────────────────────
+function renderLegend() {
+  const scenarios = getScenarios();
+  let html = scenarios.map(s =>
+    `<span class="legend-item"><span class="legend-dot" style="background:${COLORS[s]}"></span>${LABELS[s]}</span>`
+  ).join('');
+  html += `<span class="legend-item"><span class="legend-dot" style="border:1px dashed #8896b3;background:transparent;border-radius:0;"></span>Modal</span>`;
+  document.getElementById('legend-row').innerHTML = html;
+}
+
+// ─── RENDER CHART ─────────────────────────────────────────
+function renderChart() {
+  const { btcStart, kurs, monthly } = getInputs();
+  const n = PERIOD_MONTHS[currentPeriod];
+  const months = buildMonths(n);
+  const scenarios = getScenarios();
+
+  const datasets = scenarios.map(s => ({
+    label: LABELS[s],
+    data: calcDCA(buildBtcPrices(s, n, btcStart), monthly, kurs).map(r => r.portfolioIdr),
+    borderColor: COLORS[s],
+    backgroundColor: COLORS[s] + '10',
+    fill: false, tension: 0.3,
+    pointRadius: n <= 7 ? 4 : n <= 60 ? 1 : 0,
+    borderWidth: 2
+  }));
+
+  datasets.push({
+    label: 'Modal',
+    data: Array.from({length: n}, (_, i) => monthly * (i+1)),
+    borderColor: '#8896b3',
+    borderDash: [4,4],
+    borderWidth: 1.5,
+    fill: false, tension: 0, pointRadius: 0
+  });
+
+  if (chartInstance) chartInstance.destroy();
+  chartInstance = new Chart(document.getElementById('mainChart'), {
+    type: 'line',
+    data: { labels: months, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#1a2234',
+          borderColor: 'rgba(255,255,255,0.1)',
+          borderWidth: 1,
+          titleColor: '#8896b3',
+          bodyColor: '#f0f4ff',
+          callbacks: { label: ctx => ' ' + fmtB(ctx.parsed.y) }
+        }
+      },
+      scales: {
+        y: {
+          ticks: {
+            callback: v => {
+              if (v >= 1e9) return 'Rp' + (v/1e9).toFixed(0) + 'M';
+              if (v >= 1e6) return 'Rp' + (v/1e6).toFixed(0) + 'jt';
+              return 'Rp' + (v/1e6).toFixed(0) + 'jt';
+            },
+            color: '#8896b3', font: { size: 10, family: 'Space Mono' }, maxTicksLimit: 7
+          },
+          grid: { color: 'rgba(255,255,255,0.05)' }
+        },
+        x: {
+          ticks: {
+            color: '#8896b3',
+            font: { size: 10, family: 'Space Mono' },
+            autoSkip: true,
+            maxTicksLimit: n <= 7 ? 7 : n <= 60 ? 10 : 9,
+            maxRotation: 30
+          },
+          grid: { display: false }
+        }
+      }
+    }
+  });
+}
+
+// ─── RENDER TABLE ─────────────────────────────────────────
+function renderTable() {
+  const { btcStart, kurs, monthly } = getInputs();
+  const n = PERIOD_MONTHS[currentPeriod];
+  const months = buildMonths(n);
+  const scenarios = getScenarios();
+  const allRows = {};
+  for (const s of scenarios) allRows[s] = calcDCA(buildBtcPrices(s, n, btcStart), monthly, kurs);
+
+  const step = n <= 7 ? 1 : n <= 60 ? 6 : 12;
+  const milestones = new Set();
+  if (n >= 60)  milestones.add(59);
+  if (n >= 121) milestones.add(120);
+  milestones.add(n-1);
+
+  const indices = [];
+  for (let i = 0; i < n; i += step) indices.push(i);
+  if (!indices.includes(n-1)) indices.push(n-1);
+
+  let html = `<thead><tr>
+    <th>Bulan</th>
+    <th>BTC Price</th>
+    <th>Total BTC</th>
+    <th>Modal</th>
+    ${scenarios.map(s => `<th>Nilai (${LABELS[s]})</th><th>P&L</th>`).join('')}
+  </tr></thead><tbody>`;
+
+  for (const i of indices) {
+    const isMilestone = milestones.has(i);
+    const refRow = allRows[scenarios[0]][i];
+    const refPrice = buildBtcPrices(scenarios[0], n, btcStart)[i];
+    html += `<tr${isMilestone ? ' class="highlight-row"' : ''}>
+      <td style="color:#f0f4ff;font-weight:${isMilestone?'700':'400'}">${months[i]}${isMilestone ? ' <span class="badge badge-neutral">✦</span>' : ''}</td>
+      <td style="color:${COLORS[scenarios[0]]}">${fmtUsd(refPrice)}</td>
+      <td>${refRow.totalBtc.toFixed(6)}</td>
+      <td style="color:#8896b3">${fmtB(refRow.totalInvested)}</td>`;
+    for (const s of scenarios) {
+      const r = allRows[s][i];
+      const pct = r.pnlPct;
+      const sign = pct >= 0 ? '+' : '';
+      const bc = pct >= 300 ? 'badge-bull' : pct >= 100 ? 'badge-green' : pct >= 0 ? 'badge-amber' : 'badge-red';
+      html += `<td style="color:${COLORS[s]}">${fmtB(r.portfolioIdr)}</td><td><span class="badge ${bc}">${sign}${pct.toFixed(0)}%</span></td>`;
+    }
+    html += '</tr>';
+  }
+  html += '</tbody>';
+  document.getElementById('detail-table').innerHTML = html;
+}
+
+// ─── CONTROLS ─────────────────────────────────────────────
+function setPeriod(p) {
+  currentPeriod = p;
+  ['short','5yr','10yr'].forEach(k => {
+    const b = document.getElementById('btn-'+k);
+    b.classList.toggle('active', k === p);
+  });
+  renderAll();
+}
+
+function setScenario(s) {
+  currentScenario = s;
+  const map = { all: 'active', bull: 'active', normal: 'active blue', bear: 'active red' };
+  ['all','bull','normal','bear'].forEach(k => {
+    const b = document.getElementById('btn-'+k);
+    b.className = 'tbtn' + (k === s ? ' ' + (map[k] || 'active') : '');
+  });
+  renderAll();
+}
+
+function renderAll() {
+  renderMetrics();
+  renderLegend();
+  renderChart();
+  renderTable();
+}
+
+renderAll();
+</script>
+</body>
+</html>
