@@ -172,6 +172,53 @@
   .tbtn.active.red  { background: rgba(255,107,107,0.12); border-color: var(--bear); color: var(--bear); }
   .tbtn.active.period { background: rgba(167,139,250,0.12); border-color: var(--modal); color: var(--modal); }
 
+  /* CUSTOM PERIOD */
+  .period-custom {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .period-inputs {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .period-field {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .period-field input {
+    width: 62px;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    padding: 6px 8px;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    outline: none;
+    text-align: center;
+    transition: border-color 0.2s;
+  }
+  .period-field input:focus { border-color: var(--modal); }
+  .period-field input::-webkit-inner-spin-button { -webkit-appearance: none; }
+  .period-field span {
+    font-size: 11px;
+    font-family: var(--font-mono);
+    color: var(--muted);
+  }
+  .period-sep { color: var(--muted); font-size: 12px; font-family: var(--font-mono); padding: 0 2px; }
+  .period-total {
+    font-size: 11px;
+    font-family: var(--font-mono);
+    color: var(--modal);
+    margin-top: 2px;
+    min-height: 16px;
+  }
+  .period-presets { display: flex; gap: 4px; flex-wrap: wrap; }
+
   /* METRIC CARDS */
   .metrics {
     display: grid;
@@ -282,6 +329,61 @@
   .badge-amber { background: rgba(251,191,36,0.12); color: #fbbf24; border: 1px solid rgba(251,191,36,0.2); }
   .badge-red { background: rgba(255,107,107,0.12); color: var(--bear); border: 1px solid rgba(255,107,107,0.2); }
 
+  /* CUSTOM SCENARIO */
+  .custom-scenario-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+  }
+  .custom-scenario-row.hidden { display: none; }
+  .custom-input-wrap {
+    display: flex;
+    align-items: center;
+    background: var(--surface2);
+    border: 1px solid #f59e0b55;
+    border-radius: 7px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .custom-input-wrap:focus-within { border-color: #f59e0b; }
+  .custom-input-wrap input {
+    background: transparent;
+    border: none;
+    padding: 7px 4px 7px 10px;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 14px;
+    outline: none;
+    width: 68px;
+    text-align: right;
+  }
+  .custom-input-wrap input::-webkit-inner-spin-button { -webkit-appearance: none; }
+  .custom-input-wrap .csuffix {
+    padding: 7px 10px 7px 4px;
+    font-size: 12px;
+    font-family: var(--font-mono);
+    color: #f59e0b;
+    pointer-events: none;
+  }
+  .custom-chips { display: flex; gap: 4px; flex-wrap: wrap; }
+  .cchip {
+    padding: 5px 10px;
+    font-size: 11px;
+    font-family: var(--font-mono);
+    border-radius: 5px;
+    border: 1px solid var(--border2);
+    background: var(--surface2);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .cchip:hover { border-color: #f59e0b55; color: #f59e0b; }
+  .cchip.active { background: rgba(245,158,11,0.12); border-color: #f59e0b; color: #f59e0b; }
+  .custom-hint { font-size: 11px; font-family: var(--font-mono); color: var(--muted); }
+
   /* FOOTER */
   .footer {
     text-align: center;
@@ -311,7 +413,7 @@
       <p>Dollar Cost Averaging · Bear / Normal / Bull · 7 bln · 5 thn · 10 thn</p>
     </div>
     <div class="header-right">
-      <span class="badge-tag">v1.0</span>
+      <span class="badge-tag">v1.1</span>
       <span class="badge-tag">IDR</span>
     </div>
   </div>
@@ -343,12 +445,26 @@
 
   <!-- TOGGLES -->
   <div class="toggle-row">
-    <div class="toggle-group-wrap">
-      <span class="toggle-label">Periode</span>
-      <div class="toggle-group">
-        <button class="tbtn active period" id="btn-short"  onclick="setPeriod('short')">7 Bulan</button>
-        <button class="tbtn period"        id="btn-5yr"    onclick="setPeriod('5yr')">5 Tahun</button>
-        <button class="tbtn period"        id="btn-10yr"   onclick="setPeriod('10yr')">10 Tahun</button>
+    <div class="period-custom">
+      <span class="toggle-label">Periode Proyeksi</span>
+      <div class="period-inputs">
+        <div class="period-field">
+          <input type="number" id="inp-years" value="0" min="0" max="20" oninput="onPeriodInput()">
+          <span>tahun</span>
+        </div>
+        <span class="period-sep">+</span>
+        <div class="period-field">
+          <input type="number" id="inp-months-extra" value="7" min="0" max="11" oninput="onPeriodInput()">
+          <span>bulan</span>
+        </div>
+      </div>
+      <div class="period-total" id="period-total-label">= 7 bulan total</div>
+      <div class="period-presets">
+        <button class="tbtn active period" id="preset-7m"  onclick="setPreset(0,7)">7 Bln</button>
+        <button class="tbtn period"        id="preset-1y"  onclick="setPreset(1,0)">1 Thn</button>
+        <button class="tbtn period"        id="preset-2y"  onclick="setPreset(2,0)">2 Thn</button>
+        <button class="tbtn period"        id="preset-5y"  onclick="setPreset(5,0)">5 Thn</button>
+        <button class="tbtn period"        id="preset-10y" onclick="setPreset(10,0)">10 Thn</button>
       </div>
     </div>
     <div class="toggle-group-wrap">
@@ -358,6 +474,24 @@
         <button class="tbtn"        id="btn-bull"   onclick="setScenario('bull')">Bull</button>
         <button class="tbtn blue"   id="btn-normal" onclick="setScenario('normal')">Normal</button>
         <button class="tbtn red"    id="btn-bear"   onclick="setScenario('bear')">Bear</button>
+        <button class="tbtn"        id="btn-custom" onclick="setScenario('custom')" style="border-color:#f59e0b44;color:#f59e0b99">Custom</button>
+      </div>
+      <!-- Custom flat return input — shown only when custom is active -->
+      <div class="custom-scenario-row hidden" id="custom-row">
+        <div class="custom-input-wrap">
+          <input type="number" id="inp-custom-pct" value="5" min="-50" max="500" step="1" oninput="onCustomPctInput()">
+          <span class="csuffix">%/bln</span>
+        </div>
+        <div class="custom-chips">
+          <button class="cchip" id="cc-1"  onclick="setCustomPct(1)">+1%</button>
+          <button class="cchip" id="cc-3"  onclick="setCustomPct(3)">+3%</button>
+          <button class="cchip active" id="cc-5"  onclick="setCustomPct(5)">+5%</button>
+          <button class="cchip" id="cc-10" onclick="setCustomPct(10)">+10%</button>
+          <button class="cchip" id="cc-15" onclick="setCustomPct(15)">+15%</button>
+          <button class="cchip" id="cc-m2" onclick="setCustomPct(-2)">-2%</button>
+          <button class="cchip" id="cc-m5" onclick="setCustomPct(-5)">-5%</button>
+        </div>
+        <span class="custom-hint" id="custom-hint"></span>
       </div>
     </div>
   </div>
@@ -389,31 +523,114 @@
 
 <script>
 // ─── CONFIG ───────────────────────────────────────────────
-const PERIOD_MONTHS = { short: 7, '5yr': 60, '10yr': 121 };
-
-// BTC price anchors per skenario (bulan ke-N: harga USD)
-// Dihitung relatif terhadap harga awal (btcStart)
+// Multiplier relatif vs harga BTC awal, per bulan ke-N
 const SCENARIO_MULTIPLIERS = {
-  bull:   { 0:1, 6:2.17, 12:2.92, 24:5.0, 36:7.5, 48:10.0, 60:13.33, 72:15.0, 84:15.83, 96:16.67, 108:18.33, 120:20.0 },
-  normal: { 0:1, 6:1.37, 12:1.58, 24:2.0, 36:2.5, 48:2.83, 60:3.33, 72:3.67, 84:3.83, 96:4.0, 108:4.17, 120:4.33 },
-  bear:   { 0:1, 6:0.77, 12:0.83, 24:1.08, 36:1.25, 48:1.33, 60:1.50, 72:1.58, 84:1.67, 96:1.75, 108:1.83, 120:1.92 }
+  bull:   { 0:1, 6:2.17, 12:2.92, 24:5.0, 36:7.5, 48:10.0, 60:13.33, 72:15.0, 84:15.83, 96:16.67, 108:18.33, 120:20.0, 180:28.0, 240:35.0 },
+  normal: { 0:1, 6:1.37, 12:1.58, 24:2.0, 36:2.5,  48:2.83, 60:3.33,  72:3.67, 84:3.83,  96:4.0,   108:4.17,  120:4.33,  180:5.5,  240:7.0  },
+  bear:   { 0:1, 6:0.77, 12:0.83, 24:1.08,36:1.25, 48:1.33, 60:1.50,  72:1.58, 84:1.67,  96:1.75,  108:1.83,  120:1.92,  180:2.3,  240:2.8  }
 };
-
 const COLORS = { bull: '#00d68f', normal: '#4d9fff', bear: '#ff6b6b' };
 const LABELS = { bull: 'Bull', normal: 'Normal', bear: 'Bear' };
-
-let currentPeriod = 'short';
 let currentScenario = 'all';
 let chartInstance = null;
 
-// ─── HELPERS ──────────────────────────────────────────────
+// ─── PERIOD HELPERS ───────────────────────────────────────
+function getTotalMonths() {
+  const y = Math.max(0, parseInt(document.getElementById('inp-years').value) || 0);
+  const m = Math.max(0, Math.min(11, parseInt(document.getElementById('inp-months-extra').value) || 0));
+  return Math.max(1, Math.min(y * 12 + m, 240));
+}
+
+function updatePeriodLabel() {
+  const n = getTotalMonths();
+  const y = Math.floor(n / 12), m = n % 12;
+  let lbl = '= ';
+  if (y > 0 && m > 0) lbl += `${y} tahun ${m} bulan`;
+  else if (y > 0) lbl += `${y} tahun`;
+  else lbl += `${m} bulan`;
+  document.getElementById('period-total-label').textContent = lbl + ' total';
+  // sync preset highlights
+  const PRESETS = [
+    { id:'preset-7m', y:0, m:7 }, { id:'preset-1y', y:1, m:0 },
+    { id:'preset-2y', y:2, m:0 }, { id:'preset-5y', y:5, m:0 },
+    { id:'preset-10y',y:10,m:0 }
+  ];
+  const curY = parseInt(document.getElementById('inp-years').value)||0;
+  const curM = parseInt(document.getElementById('inp-months-extra').value)||0;
+  PRESETS.forEach(p => {
+    const el = document.getElementById(p.id);
+    if (el) el.classList.toggle('active', p.y === curY && p.m === curM);
+  });
+}
+
+function onPeriodInput() {
+  // clamp months to 0–11
+  const mEl = document.getElementById('inp-months-extra');
+  let mv = parseInt(mEl.value) || 0;
+  if (mv > 11) { mEl.value = 11; mv = 11; }
+  if (mv < 0)  { mEl.value = 0;  mv = 0; }
+  updatePeriodLabel();
+  renderAll();
+}
+
+function setPreset(years, months) {
+  document.getElementById('inp-years').value = years;
+  document.getElementById('inp-months-extra').value = months;
+  updatePeriodLabel();
+  renderAll();
+}
+
+// ─── CORE HELPERS ─────────────────────────────────────────
 function getInputs() {
   return {
-    btcStart:  parseFloat(document.getElementById('inp-btc').value)     || 60000,
-    kurs:      parseFloat(document.getElementById('inp-kurs').value)    || 17500,
-    monthly:   parseFloat(document.getElementById('inp-monthly').value) || 1500000
+    btcStart: parseFloat(document.getElementById('inp-btc').value)      || 60000,
+    kurs:     parseFloat(document.getElementById('inp-kurs').value)     || 17500,
+    monthly:  parseFloat(document.getElementById('inp-monthly').value)  || 1500000
   };
 }
+
+// ─── CUSTOM SCENARIO ──────────────────────────────────────
+function getCustomPct() {
+  return parseFloat(document.getElementById('inp-custom-pct').value) || 5;
+}
+
+function buildCustomPrices(n, btcStart) {
+  const pctPerMonth = getCustomPct() / 100;
+  return Array.from({length: n}, (_, i) =>
+    Math.round(btcStart * Math.pow(1 + pctPerMonth, i))
+  );
+}
+
+function syncCustomChips() {
+  const val = getCustomPct();
+  const chips = [1, 3, 5, 10, 15, -2, -5];
+  chips.forEach(p => {
+    const el = document.getElementById('cc-' + (p < 0 ? 'm' + Math.abs(p) : p));
+    if (el) el.classList.toggle('active', p === val);
+  });
+  // Update hint: projected BTC price after full period
+  const n = getTotalMonths();
+  const { btcStart } = getInputs();
+  const finalPrice = Math.round(btcStart * Math.pow(1 + val/100, n-1));
+  const sign = val >= 0 ? '+' : '';
+  const el = document.getElementById('custom-hint');
+  if (el) el.textContent = `→ BTC ${fmtUsd(finalPrice)} setelah ${n} bln`;
+}
+
+function onCustomPctInput() {
+  syncCustomChips();
+  renderAll();
+}
+
+function setCustomPct(pct) {
+  document.getElementById('inp-custom-pct').value = pct;
+  syncCustomChips();
+  renderAll();
+}
+
+
+// ─── TARGET RETURN HELPERS ────────────────────────────────
+// (removed — replaced by custom scenario)
 
 function buildMonths(n) {
   const start = new Date(2026, 6, 1);
@@ -425,14 +642,14 @@ function buildMonths(n) {
 
 function buildBtcPrices(scenario, n, btcStart) {
   const mults = SCENARIO_MULTIPLIERS[scenario];
-  const keys = Object.keys(mults).map(Number).sort((a,b) => a-b);
+  const keys = Object.keys(mults).map(Number).sort((a,b)=>a-b);
   return Array.from({length: n}, (_, i) => {
     let lo = keys[0], hi = keys[keys.length-1];
     for (let k = 0; k < keys.length-1; k++) {
-      if (i >= keys[k] && i <= keys[k+1]) { lo = keys[k]; hi = keys[k+1]; break; }
+      if (i >= keys[k] && i <= keys[k+1]) { lo=keys[k]; hi=keys[k+1]; break; }
     }
-    const t = lo === hi ? 0 : (i - lo) / (hi - lo);
-    return Math.round(btcStart * (mults[lo] + (mults[hi] - mults[lo]) * t));
+    const t = lo===hi ? 0 : (i-lo)/(hi-lo);
+    return Math.round(btcStart * (mults[lo] + (mults[hi]-mults[lo])*t));
   });
 }
 
@@ -443,51 +660,71 @@ function calcDCA(btcPrices, monthlyIdr, kurs) {
     totalBtc += monthlyUsd / price;
     totalInvested += monthlyIdr;
     const portfolioIdr = totalBtc * price * kurs;
-    return {
-      price, totalBtc, totalInvested, portfolioIdr,
+    return { price, totalBtc, totalInvested, portfolioIdr,
       pnlIdr: portfolioIdr - totalInvested,
-      pnlPct: ((portfolioIdr / totalInvested) - 1) * 100,
-      multiplier: portfolioIdr / totalInvested
-    };
+      pnlPct: ((portfolioIdr / totalInvested)-1)*100,
+      multiplier: portfolioIdr / totalInvested };
   });
 }
 
 function fmtB(v) {
   const n = Math.round(v);
   if (n >= 1e12) return 'Rp ' + (n/1e12).toFixed(2) + ' T';
-  if (n >= 1e9)  return 'Rp ' + (n/1e9).toFixed(2) + ' M';
-  if (n >= 1e6)  return 'Rp ' + (n/1e6).toFixed(1) + ' jt';
+  if (n >= 1e9)  return 'Rp ' + (n/1e9).toFixed(2)  + ' M';
+  if (n >= 1e6)  return 'Rp ' + (n/1e6).toFixed(1)  + ' jt';
   return 'Rp ' + n.toLocaleString('id-ID');
 }
 function fmtUsd(v) {
   if (v >= 1e6) return '$' + (v/1e6).toFixed(2) + 'M';
   return '$' + Math.round(v).toLocaleString('en-US');
 }
-
 function getScenarios() {
-  return currentScenario === 'all' ? ['bull','normal','bear'] : [currentScenario];
+  if (currentScenario === 'all') return ['bull','normal','bear'];
+  return [currentScenario]; // includes 'custom'
 }
+
+// Unified price builder — works for bull/normal/bear/custom
+function getPrices(scenario, n, btcStart) {
+  if (scenario === 'custom') return buildCustomPrices(n, btcStart);
+  return buildBtcPrices(scenario, n, btcStart);
+}
+
+function getScenarioLabel(s) {
+  if (s === 'custom') {
+    const pct = getCustomPct();
+    return `Custom (${pct >= 0 ? '+' : ''}${pct}%/bln)`;
+  }
+  return LABELS[s];
+}
+
+function getScenarioColor(s) {
+  if (s === 'custom') return '#f59e0b';
+  return COLORS[s];
+}
+
 
 // ─── RENDER METRICS ───────────────────────────────────────
 function renderMetrics() {
   const { btcStart, kurs, monthly } = getInputs();
-  const n = PERIOD_MONTHS[currentPeriod];
+  const n = getTotalMonths();
   const scenarios = getScenarios();
   const totalInvested = monthly * n;
+  const y = Math.floor(n/12), m = n%12;
+  const periodStr = y>0&&m>0 ? `${y}thn ${m}bln` : y>0 ? `${y} tahun` : `${m} bulan`;
   let html = `<div class="metric-card modal-card">
-    <div class="mc-label">Total Modal (${n} bln)</div>
+    <div class="mc-label">Total Modal (${periodStr})</div>
     <div class="mc-value">${fmtB(totalInvested)}</div>
     <div class="mc-sub neu">${fmtB(monthly)}/bln · Rp${Math.round(kurs).toLocaleString('id-ID')}</div>
   </div>`;
-  const cardClass = { bull: 'bull-card', normal: 'normal-card', bear: 'bear-card' };
+  const cardClass = { bull:'bull-card', normal:'normal-card', bear:'bear-card', custom:'modal-card' };
   for (const s of scenarios) {
-    const rows = calcDCA(buildBtcPrices(s, n, btcStart), monthly, kurs);
-    const last = rows[rows.length-1];
-    const sign = last.pnlPct >= 0 ? '+' : '';
-    const cls = last.pnlPct >= 0 ? 'pos' : 'neg';
-    html += `<div class="metric-card ${cardClass[s]}">
-      <div class="mc-label">${LABELS[s]} Case</div>
-      <div class="mc-value" style="color:${COLORS[s]}">${fmtB(last.portfolioIdr)}</div>
+    const last = calcDCA(getPrices(s, n, btcStart), monthly, kurs).at(-1);
+    const sign = last.pnlPct>=0 ? '+' : '';
+    const cls  = last.pnlPct>=0 ? 'pos' : 'neg';
+    const color = getScenarioColor(s);
+    html += `<div class="metric-card ${cardClass[s]||'modal-card'}" style="${s==='custom'?'--card-accent:#f59e0b':''}">
+      <div class="mc-label">${getScenarioLabel(s)}</div>
+      <div class="mc-value" style="color:${color}">${fmtB(last.portfolioIdr)}</div>
       <div class="mc-sub ${cls}">${sign}${last.pnlPct.toFixed(0)}% · ${last.multiplier.toFixed(1)}x modal</div>
     </div>`;
   }
@@ -498,7 +735,7 @@ function renderMetrics() {
 function renderLegend() {
   const scenarios = getScenarios();
   let html = scenarios.map(s =>
-    `<span class="legend-item"><span class="legend-dot" style="background:${COLORS[s]}"></span>${LABELS[s]}</span>`
+    `<span class="legend-item"><span class="legend-dot" style="background:${getScenarioColor(s)}"></span>${getScenarioLabel(s)}</span>`
   ).join('');
   html += `<span class="legend-item"><span class="legend-dot" style="border:1px dashed #8896b3;background:transparent;border-radius:0;"></span>Modal</span>`;
   document.getElementById('legend-row').innerHTML = html;
@@ -507,67 +744,60 @@ function renderLegend() {
 // ─── RENDER CHART ─────────────────────────────────────────
 function renderChart() {
   const { btcStart, kurs, monthly } = getInputs();
-  const n = PERIOD_MONTHS[currentPeriod];
+  const n = getTotalMonths();
   const months = buildMonths(n);
   const scenarios = getScenarios();
-
-  const datasets = scenarios.map(s => ({
-    label: LABELS[s],
-    data: calcDCA(buildBtcPrices(s, n, btcStart), monthly, kurs).map(r => r.portfolioIdr),
-    borderColor: COLORS[s],
-    backgroundColor: COLORS[s] + '10',
-    fill: false, tension: 0.3,
-    pointRadius: n <= 7 ? 4 : n <= 60 ? 1 : 0,
-    borderWidth: 2
-  }));
-
-  datasets.push({
-    label: 'Modal',
-    data: Array.from({length: n}, (_, i) => monthly * (i+1)),
-    borderColor: '#8896b3',
-    borderDash: [4,4],
-    borderWidth: 1.5,
-    fill: false, tension: 0, pointRadius: 0
+  const datasets = scenarios.map(s => {
+    const color = getScenarioColor(s);
+    const dash = s === 'custom' ? [6, 3] : undefined;
+    return {
+      label: getScenarioLabel(s),
+      data: calcDCA(getPrices(s, n, btcStart), monthly, kurs).map(r => r.portfolioIdr),
+      borderColor: color, backgroundColor: color+'10',
+      borderDash: dash,
+      fill: false, tension: 0.3,
+      pointRadius: n<=7 ? 4 : n<=24 ? 2 : n<=60 ? 1 : 0, borderWidth: s==='custom' ? 2.5 : 2
+    };
   });
-
+  datasets.push({
+    label:'Modal',
+    data: Array.from({length:n},(_,i)=>monthly*(i+1)),
+    borderColor:'#8896b3', borderDash:[4,4], borderWidth:1.5,
+    fill:false, tension:0, pointRadius:0
+  });
   if (chartInstance) chartInstance.destroy();
   chartInstance = new Chart(document.getElementById('mainChart'), {
-    type: 'line',
-    data: { labels: months, datasets },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          backgroundColor: '#1a2234',
-          borderColor: 'rgba(255,255,255,0.1)',
-          borderWidth: 1,
-          titleColor: '#8896b3',
-          bodyColor: '#f0f4ff',
-          callbacks: { label: ctx => ' ' + fmtB(ctx.parsed.y) }
+    type:'line', data:{labels:months, datasets},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          backgroundColor:'#1a2234', borderColor:'rgba(255,255,255,0.1)', borderWidth:1,
+          titleColor:'#8896b3', bodyColor:'#f0f4ff',
+          callbacks:{ label: ctx => ' ' + fmtB(ctx.parsed.y) }
         }
       },
-      scales: {
-        y: {
-          ticks: {
+      scales:{
+        y:{
+          ticks:{
             callback: v => {
-              if (v >= 1e9) return 'Rp' + (v/1e9).toFixed(0) + 'M';
-              if (v >= 1e6) return 'Rp' + (v/1e6).toFixed(0) + 'jt';
-              return 'Rp' + (v/1e6).toFixed(0) + 'jt';
+              if(v>=1e9) return 'Rp'+(v/1e9).toFixed(0)+'M';
+              if(v>=1e6) return 'Rp'+(v/1e6).toFixed(0)+'jt';
+              return 'Rp'+(v/1e6).toFixed(0)+'jt';
             },
-            color: '#8896b3', font: { size: 10, family: 'Space Mono' }, maxTicksLimit: 7
+            color:'#8896b3', font:{size:10,family:'Space Mono'}, maxTicksLimit:7
           },
-          grid: { color: 'rgba(255,255,255,0.05)' }
+          grid:{color:'rgba(255,255,255,0.05)'}
         },
-        x: {
-          ticks: {
-            color: '#8896b3',
-            font: { size: 10, family: 'Space Mono' },
-            autoSkip: true,
-            maxTicksLimit: n <= 7 ? 7 : n <= 60 ? 10 : 9,
-            maxRotation: 30
+        x:{
+          ticks:{
+            color:'#8896b3', font:{size:10,family:'Space Mono'},
+            autoSkip:true,
+            maxTicksLimit: n<=7?7 : n<=24?n : n<=60?12 : 10,
+            maxRotation:30
           },
-          grid: { display: false }
+          grid:{display:false}
         }
       }
     }
@@ -577,45 +807,43 @@ function renderChart() {
 // ─── RENDER TABLE ─────────────────────────────────────────
 function renderTable() {
   const { btcStart, kurs, monthly } = getInputs();
-  const n = PERIOD_MONTHS[currentPeriod];
+  const n = getTotalMonths();
   const months = buildMonths(n);
   const scenarios = getScenarios();
   const allRows = {};
-  for (const s of scenarios) allRows[s] = calcDCA(buildBtcPrices(s, n, btcStart), monthly, kurs);
+  for (const s of scenarios) allRows[s] = calcDCA(getPrices(s, n, btcStart), monthly, kurs);
 
-  const step = n <= 7 ? 1 : n <= 60 ? 6 : 12;
+  const step = n<=12 ? 1 : n<=24 ? 3 : n<=60 ? 6 : 12;
   const milestones = new Set();
-  if (n >= 60)  milestones.add(59);
-  if (n >= 121) milestones.add(120);
+  for (let y=1; y*12<=n; y++) milestones.add(y*12-1);
   milestones.add(n-1);
 
   const indices = [];
-  for (let i = 0; i < n; i += step) indices.push(i);
+  for (let i=0; i<n; i+=step) indices.push(i);
   if (!indices.includes(n-1)) indices.push(n-1);
 
+  const refS = scenarios[0];
+  const refPrices = getPrices(refS, n, btcStart);
+
   let html = `<thead><tr>
-    <th>Bulan</th>
-    <th>BTC Price</th>
-    <th>Total BTC</th>
-    <th>Modal</th>
-    ${scenarios.map(s => `<th>Nilai (${LABELS[s]})</th><th>P&L</th>`).join('')}
+    <th>Bulan</th><th>BTC Price</th><th>Total BTC</th><th>Modal</th>
+    ${scenarios.map(s=>`<th>Nilai (${getScenarioLabel(s)})</th><th>P&L</th>`).join('')}
   </tr></thead><tbody>`;
 
   for (const i of indices) {
     const isMilestone = milestones.has(i);
-    const refRow = allRows[scenarios[0]][i];
-    const refPrice = buildBtcPrices(scenarios[0], n, btcStart)[i];
-    html += `<tr${isMilestone ? ' class="highlight-row"' : ''}>
-      <td style="color:#f0f4ff;font-weight:${isMilestone?'700':'400'}">${months[i]}${isMilestone ? ' <span class="badge badge-neutral">✦</span>' : ''}</td>
-      <td style="color:${COLORS[scenarios[0]]}">${fmtUsd(refPrice)}</td>
+    const refRow  = allRows[refS][i];
+    const refPrice= refPrices[i];
+    html += `<tr${isMilestone?' class="highlight-row"':''}>
+      <td style="color:#f0f4ff;font-weight:${isMilestone?'700':'400'}">${months[i]}${isMilestone?' <span class="badge badge-neutral">✦</span>':''}</td>
+      <td style="color:${getScenarioColor(refS)}">${fmtUsd(refPrice)}</td>
       <td>${refRow.totalBtc.toFixed(6)}</td>
       <td style="color:#8896b3">${fmtB(refRow.totalInvested)}</td>`;
     for (const s of scenarios) {
       const r = allRows[s][i];
-      const pct = r.pnlPct;
-      const sign = pct >= 0 ? '+' : '';
-      const bc = pct >= 300 ? 'badge-bull' : pct >= 100 ? 'badge-green' : pct >= 0 ? 'badge-amber' : 'badge-red';
-      html += `<td style="color:${COLORS[s]}">${fmtB(r.portfolioIdr)}</td><td><span class="badge ${bc}">${sign}${pct.toFixed(0)}%</span></td>`;
+      const pct=r.pnlPct, sign=pct>=0?'+':'';
+      const bc=pct>=300?'badge-bull':pct>=100?'badge-green':pct>=0?'badge-amber':'badge-red';
+      html += `<td style="color:${getScenarioColor(s)}">${fmtB(r.portfolioIdr)}</td><td><span class="badge ${bc}">${sign}${pct.toFixed(0)}%</span></td>`;
     }
     html += '</tr>';
   }
@@ -624,22 +852,24 @@ function renderTable() {
 }
 
 // ─── CONTROLS ─────────────────────────────────────────────
-function setPeriod(p) {
-  currentPeriod = p;
-  ['short','5yr','10yr'].forEach(k => {
-    const b = document.getElementById('btn-'+k);
-    b.classList.toggle('active', k === p);
-  });
-  renderAll();
-}
-
 function setScenario(s) {
   currentScenario = s;
-  const map = { all: 'active', bull: 'active', normal: 'active blue', bear: 'active red' };
-  ['all','bull','normal','bear'].forEach(k => {
+  const colorMap = { all:'active', bull:'active', normal:'active blue', bear:'active red', custom:'active' };
+  ['all','bull','normal','bear','custom'].forEach(k => {
     const b = document.getElementById('btn-'+k);
-    b.className = 'tbtn' + (k === s ? ' ' + (map[k] || 'active') : '');
+    if (!b) return;
+    if (k === s) {
+      b.className = 'tbtn ' + (colorMap[k] || 'active');
+      if (k === 'custom') b.style.cssText = 'background:rgba(245,158,11,0.12);border-color:#f59e0b;color:#f59e0b';
+    } else {
+      b.className = 'tbtn' + (k === 'normal' ? ' blue' : k === 'bear' ? ' red' : '');
+      if (k === 'custom') b.style.cssText = 'border-color:#f59e0b44;color:#f59e0b99';
+    }
   });
+  // show/hide custom input row
+  const customRow = document.getElementById('custom-row');
+  if (customRow) customRow.classList.toggle('hidden', s !== 'custom');
+  if (s === 'custom') syncCustomChips();
   renderAll();
 }
 
@@ -650,6 +880,8 @@ function renderAll() {
   renderTable();
 }
 
+// init
+updatePeriodLabel();
 renderAll();
 </script>
 </body>
