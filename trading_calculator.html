@@ -1,555 +1,194 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Crypto Trading Plan Calculator</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CryptoCalc — Preview UI</title>
 <style>
-  :root {
-    --bg: #0f1117;
-    --bg2: #181b24;
-    --bg3: #1f2333;
-    --bg4: #262b3d;
-    --border: #2e3347;
-    --border2: #3a4060;
-    --text: #e8eaf0;
-    --text2: #8b90a7;
-    --text3: #5a5f75;
-    --green: #00c076;
-    --green-dim: #0f3d28;
-    --green-text: #00e68a;
-    --red: #ef5350;
-    --red-dim: #3d1515;
-    --red-text: #ff7875;
-    --orange: #f0a030;
-    --orange-dim: #3d2800;
-    --orange-text: #ffbb55;
-    --blue: #4a9eff;
-    --blue-dim: #0d2a4d;
-    --blue-text: #7ab8ff;
-    --yellow: #f5c842;
-    --yellow-dim: #3d3200;
-    --radius: 8px;
-    --radius-lg: 12px;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    font-size: 14px;
-    min-height: 100vh;
-    padding: 20px;
-  }
-  .container { max-width: 780px; margin: 0 auto; }
-  .header { margin-bottom: 24px; }
-  .header h1 { font-size: 20px; font-weight: 600; color: var(--text); margin-bottom: 4px; display: flex; align-items: center; gap: 10px; }
-  .header p { font-size: 13px; color: var(--text2); }
-  .header .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); display: inline-block; }
-
-  .section { margin-bottom: 20px; }
-  .section-label {
-    font-size: 11px; font-weight: 600; color: var(--text3);
-    text-transform: uppercase; letter-spacing: 0.08em;
-    margin-bottom: 10px;
-  }
-
-  .seg {
-    display: flex; border: 1px solid var(--border); border-radius: var(--radius);
-    overflow: hidden; margin-bottom: 18px; width: fit-content;
-  }
-  .seg button {
-    padding: 8px 28px; border: none; background: transparent;
-    color: var(--text2); font-size: 13px; font-weight: 500;
-    cursor: pointer; transition: all 0.15s;
-  }
-  .seg button.active.long { background: var(--green-dim); color: var(--green-text); }
-  .seg button.active.short { background: var(--red-dim); color: var(--red-text); }
-  .seg button:not(:last-child) { border-right: 1px solid var(--border); }
-  .seg button:hover:not(.active) { background: var(--bg3); color: var(--text); }
-
-  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-  .field { display: flex; flex-direction: column; gap: 6px; }
-  label {
-    font-size: 11px; font-weight: 600; color: var(--text3);
-    text-transform: uppercase; letter-spacing: 0.06em;
-  }
-  input {
-    height: 40px; padding: 0 12px;
-    font-size: 14px; font-weight: 500;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    background: var(--bg2);
-    color: var(--text);
-    width: 100%;
-    transition: border-color 0.15s;
-  }
-  input:focus { outline: none; border-color: var(--blue); background: var(--bg3); }
-  input:hover:not(:focus) { border-color: var(--border2); }
-
-  .lev-grid { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
-  .lev-btn {
-    height: 34px; padding: 0 16px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    background: var(--bg2);
-    color: var(--text2);
-    font-size: 13px; font-weight: 500;
-    cursor: pointer; transition: all 0.15s;
-  }
-  .lev-btn:hover { background: var(--bg3); color: var(--text); border-color: var(--border2); }
-  .lev-btn.active { background: var(--blue-dim); color: var(--blue-text); border-color: var(--blue); }
-
-  .divider { height: 1px; background: var(--border); margin: 20px 0; }
-
-  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
-  .card {
-    background: var(--bg2); border: 1px solid var(--border);
-    border-radius: var(--radius-lg); padding: 14px;
-  }
-  .card .lbl { font-size: 10px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 6px; }
-  .card .val { font-size: 20px; font-weight: 600; color: var(--text); line-height: 1; }
-  .card .sub2 { font-size: 11px; color: var(--text3); margin-top: 4px; }
-  .card.card-red { background: var(--red-dim); border-color: rgba(239,83,80,0.25); }
-  .card.card-red .val { color: var(--red-text); }
-  .card.card-green { background: var(--green-dim); border-color: rgba(0,192,118,0.25); }
-  .card.card-green .val { color: var(--green-text); }
-  .card.card-orange { background: var(--orange-dim); border-color: rgba(240,160,48,0.25); }
-  .card.card-orange .val { color: var(--orange-text); }
-  .card.card-blue { background: var(--blue-dim); border-color: rgba(74,158,255,0.25); }
-  .card.card-blue .val { color: var(--blue-text); }
-
-  .warn-box {
-    background: var(--yellow-dim); border: 1px solid rgba(245,200,66,0.35);
-    border-radius: var(--radius); padding: 12px 14px;
-    font-size: 12px; color: var(--yellow);
-    margin-top: 12px; display: none; line-height: 1.8;
-  }
-  .warn-box.show { display: block; }
-
-  .info-table { width: 100%; margin-bottom: 14px; }
-  .info-table tr td { padding: 5px 0; font-size: 13px; }
-  .info-table tr td:first-child { color: var(--text2); }
-  .info-table tr td:last-child { text-align: right; font-weight: 500; color: var(--text); font-variant-numeric: tabular-nums; }
-  .info-table tr:not(:last-child) td { border-bottom: 1px solid var(--border); }
-
-  .risk-label { font-size: 12px; color: var(--text3); margin-bottom: 6px; }
-  .risk-bar-bg { height: 6px; background: var(--bg4); border-radius: 3px; overflow: hidden; margin-bottom: 6px; }
-  .risk-bar-fill { height: 100%; border-radius: 3px; transition: width 0.3s, background 0.3s; }
-  .risk-note { font-size: 11px; color: var(--text3); }
-
-  .chart-box {
-    background: var(--bg2); border: 1px solid var(--border);
-    border-radius: var(--radius-lg); padding: 16px; margin-top: 16px;
-  }
-  .chart-box-header {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 12px;
-  }
-  .chart-box-header span { font-size: 12px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; }
-  .badge {
-    font-size: 11px; font-weight: 600; padding: 3px 10px;
-    border-radius: 100px;
-  }
-  .badge.long { background: var(--green-dim); color: var(--green-text); }
-  .badge.short { background: var(--red-dim); color: var(--red-text); }
-
-  .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 10px; }
-  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text2); }
-  .legend-dot { width: 10px; height: 3px; border-radius: 2px; }
-
-  .footer { margin-top: 20px; font-size: 11px; color: var(--text3); line-height: 1.7; }
-  .footer a { color: var(--text2); }
+:root{--bg:#0f1117;--bg2:#181b24;--bg3:#1f2333;--bg4:#262b3d;--border:#2e3347;--border2:#3a4060;--text:#e8eaf0;--text2:#8b90a7;--text3:#5a5f75;--green:#00c076;--green-dim:#0f3d28;--green-t:#00e68a;--red:#ef5350;--red-dim:#3d1515;--red-t:#ff7875;--orange:#f0a030;--orange-dim:#3d2800;--orange-t:#ffbb55;--blue:#4a9eff;--blue-dim:#0d2a4d;--blue-t:#7ab8ff;--yellow:#f5c842;--yellow-dim:#3d3200;--purple:#a78bfa;--purple-dim:#1e1040;--radius:8px;--radius-lg:12px}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;font-size:14px;line-height:1.5;min-height:100vh}
+.page-wrap{max-width:860px;margin:0 auto;padding:24px 20px}
+.divider{height:1px;background:var(--border);margin:20px 0}
+.section{margin-bottom:20px}
+.section-label{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em}
+.field input{height:40px;padding:0 12px;font-size:14px;font-weight:500;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg2);color:var(--text);width:100%;transition:border-color .15s}
+.field input:focus{outline:none;border-color:var(--blue);background:var(--bg3)}
+.field input:hover:not(:focus){border-color:var(--border2)}
+.field .input-note{font-size:10px;color:var(--text3);margin-top:2px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px}
+.seg{display:flex;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;width:fit-content}
+.seg button{padding:8px 26px;border:none;background:transparent;color:var(--text2);font-size:13px;font-weight:500;cursor:pointer;transition:all .15s}
+.seg button.long{background:var(--green-dim);color:var(--green-t)}
+.seg button.short{background:var(--red-dim);color:var(--red-t)}
+.seg button:not(:last-child){border-right:1px solid var(--border)}
+.lev-grid{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px}
+.lev-btn{height:32px;padding:0 14px;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg2);color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s}
+.lev-btn:hover{background:var(--bg3);color:var(--text);border-color:var(--border2)}
+.lev-btn.active{background:var(--blue-dim);color:var(--blue-t);border-color:var(--blue)}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:13px}
+.card .card-label{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px}
+.card .card-val{font-size:19px;font-weight:700;line-height:1;color:var(--text)}
+.card .card-sub{font-size:11px;color:var(--text3);margin-top:4px}
+.card.c-red{background:var(--red-dim);border-color:rgba(239,83,80,.25)} .card.c-red .card-val{color:var(--red-t)}
+.card.c-green{background:var(--green-dim);border-color:rgba(0,192,118,.25)} .card.c-green .card-val{color:var(--green-t)}
+.card.c-orange{background:var(--orange-dim);border-color:rgba(240,160,48,.25)} .card.c-orange .card-val{color:var(--orange-t)}
+.card.c-blue{background:var(--blue-dim);border-color:rgba(74,158,255,.25)} .card.c-blue .card-val{color:var(--blue-t)}
+.card.c-purple{background:var(--purple-dim);border-color:rgba(167,139,250,.25)} .card.c-purple .card-val{color:var(--purple)}
+.warn-box{background:var(--yellow-dim);border:1px solid rgba(245,200,66,.35);border-radius:var(--radius);padding:11px 13px;font-size:12px;color:var(--yellow);margin-top:10px;line-height:1.8;white-space:pre-line}
+.info-table{width:100%;border-collapse:collapse;margin-bottom:12px}
+.info-table tr td{padding:5px 0;font-size:12px;border-bottom:1px solid var(--bg3)}
+.info-table tr:last-child td{border-bottom:none}
+.info-table tr td:first-child{color:var(--text2)}
+.info-table tr td:last-child{text-align:right;font-weight:600;color:var(--text);font-variant-numeric:tabular-nums}
+.risk-bar-bg{height:6px;background:var(--bg4);border-radius:3px;overflow:hidden;margin:6px 0}
+.risk-bar-fill{height:100%;border-radius:3px;transition:width .3s,background .3s}
+.navbar{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:var(--bg2);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
+.navbar-brand{font-size:15px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px}
+.navbar-brand .dot{width:8px;height:8px;border-radius:50%;background:var(--green)}
+.navbar-links{display:flex;gap:4px;align-items:center}
+.nav-link{padding:6px 12px;border-radius:var(--radius);color:var(--text2);font-size:13px;font-weight:500;text-decoration:none;cursor:pointer;background:none;border:none}
+.nav-link.active{background:var(--bg3);color:var(--text)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:38px;padding:0 16px;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;border:none;text-decoration:none}
+.btn-primary{background:var(--blue);color:#fff}
+.btn-secondary{background:var(--bg3);color:var(--text2);border:1px solid var(--border)}
+.btn-sm{height:30px;padding:0 11px;font-size:12px}
+@media(max-width:640px){.cards{grid-template-columns:1fr 1fr}.grid3{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}.page-wrap{padding:16px 14px}.navbar{padding:10px 14px}}
+@media(max-width:420px){.cards{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<div class="container">
-
-  <div class="header">
-    <h1><span class="dot"></span> Crypto Trading Plan Calculator</h1>
-    <p>Hitung leverage, margin, harga likuidasi, TP/SL, dan risk-reward sebelum entry.</p>
+<nav class="navbar">
+  <span class="navbar-brand"><span class="dot"></span>CryptoCalc</span>
+  <div class="navbar-links">
+    <span class="nav-link active">Kalkulator</span>
+    <span class="btn btn-primary btn-sm">Masuk</span>
   </div>
-
-  <div class="section">
-    <div class="section-label">arah posisi</div>
-    <div class="seg" id="dirSeg">
-      <button class="active long" onclick="setDir('long',this)">▲ Long</button>
-      <button onclick="setDir('short',this)">▼ Short</button>
-    </div>
+</nav>
+<main class="page-wrap">
+  <div style="margin-bottom:20px">
+    <h1 style="font-size:20px;font-weight:700;margin-bottom:4px">Trading Plan Calculator</h1>
+    <p style="font-size:13px;color:var(--text2)">Hitung leverage, margin, harga likuidasi, fee, TP/SL — formula spesifik per exchange. <a href="#" style="color:var(--blue-t)">Login</a> untuk menyimpan trading plan.</p>
   </div>
-
   <div class="section">
-    <div class="section-label">setup posisi</div>
+    <div class="section-label">Exchange</div>
+    <div id="ex-buttons" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"></div>
+    <div id="ex-info" style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start;font-size:11px"></div>
+  </div>
+  <div id="model-banner" style="border-radius:var(--radius);padding:10px 14px;margin-bottom:16px;font-size:12px;line-height:1.7"></div>
+  <div class="section">
+    <div class="section-label">Arah Posisi</div>
+    <div class="seg" id="dir-seg"><button data-dir="long" class="long">&#9650; Long</button><button data-dir="short">&#9660; Short</button></div>
+  </div>
+  <div class="section">
+    <div class="section-label">Tipe Order</div>
+    <div style="display:flex;gap:8px" id="ot-seg"><button data-ot="taker" class="btn btn-secondary btn-sm">Market / Taker</button><button data-ot="maker" class="btn btn-secondary btn-sm">Limit / Maker</button></div>
+  </div>
+  <div class="section">
+    <div class="section-label">Setup Posisi</div>
     <div class="grid2">
-      <div class="field">
-        <label>Harga Entry (USDT)</label>
-        <input type="number" id="entryPrice" value="65000" step="any" oninput="calc()">
-      </div>
-      <div class="field">
-        <label>Total Modal Wallet (USDT)</label>
-        <input type="number" id="walletBalance" value="1000" step="any" oninput="calc()">
-      </div>
+      <div class="field"><label>Harga Entry (USDT)</label><input id="i-entry" type="number" step="any" value="0.28"></div>
+      <div class="field"><label>Total Wallet (USDT)</label><input id="i-wallet" type="number" step="any" value="100"></div>
     </div>
     <div class="grid2">
-      <div class="field">
-        <label>Margin Digunakan (USDT)</label>
-        <input type="number" id="margin" value="100" step="any" oninput="syncPct()">
-      </div>
-      <div class="field">
-        <label>% dari Wallet</label>
-        <input type="number" id="marginPct" value="10" step="any" oninput="calcFromPct()">
-      </div>
+      <div class="field"><label id="iv-label">Value / Notional (USDT)</label><input id="i-iv" type="number" step="any" value="10"><div class="input-note" id="iv-note">Total ukuran posisi. Margin = Value &divide; leverage.</div></div>
+      <div class="field"><label>% Margin dari Wallet</label><input id="i-pct" type="number" step="any" value="10"><div class="input-note">Rekomendasi: maks 10&ndash;20% per posisi</div></div>
     </div>
   </div>
-
   <div class="section">
-    <div class="section-label">leverage</div>
-    <div class="lev-grid">
-      <button class="lev-btn active" onclick="setLev(5,this)">5×</button>
-      <button class="lev-btn" onclick="setLev(10,this)">10×</button>
-      <button class="lev-btn" onclick="setLev(20,this)">20×</button>
-      <button class="lev-btn" onclick="setLev(50,this)">50×</button>
-      <button class="lev-btn" onclick="setLev(100,this)">100×</button>
-      <button class="lev-btn" id="levCustomBtn" onclick="focusCustomLev(this)">Custom</button>
-    </div>
-    <div class="field" style="max-width:200px">
-      <label>Leverage Manual</label>
-      <input type="number" id="leverage" value="5" min="1" max="125" step="1" oninput="syncLevBtn()">
-    </div>
+    <div class="section-label">Leverage</div>
+    <div class="lev-grid" id="lev-grid"></div>
+    <div class="field" style="max-width:160px"><label>Leverage Manual</label><input id="i-lev" type="number" min="1" max="200" step="1" value="10"></div>
+    <div id="eff-line" style="margin-top:8px;font-size:12px;color:var(--text2);display:flex;gap:20px;flex-wrap:wrap"></div>
   </div>
-
   <div class="section">
-    <div class="section-label">target & stop</div>
+    <div class="section-label">Target &amp; Stop</div>
     <div class="grid3">
-      <div class="field">
-        <label>Take Profit / TP (USDT)</label>
-        <input type="number" id="tp" value="67000" step="any" oninput="calc()">
-      </div>
-      <div class="field">
-        <label>Stop Loss / SL (USDT)</label>
-        <input type="number" id="sl" value="63500" step="any" oninput="calc()">
-      </div>
-      <div class="field">
-        <label>Maintenance Margin %</label>
-        <input type="number" id="mmr" value="0.5" step="0.1" oninput="calc()">
-      </div>
+      <div class="field"><label>Take Profit / TP</label><input id="i-tp" type="number" step="any" value="0.32"></div>
+      <div class="field"><label>Stop Loss / SL</label><input id="i-sl" type="number" step="any" value="0.24"></div>
+      <div class="field"><label>Override MMR %</label><input id="i-mmr" type="number" step="0.1" placeholder="auto"><div class="input-note">Kosongkan = default exchange</div></div>
     </div>
   </div>
-
   <div class="divider"></div>
-
-  <div class="section">
-    <div class="section-label">hasil kalkulasi</div>
-    <div class="cards">
-      <div class="card card-red">
-        <div class="lbl">Harga Likuidasi</div>
-        <div class="val" id="liqPrice">—</div>
-        <div class="sub2" id="liqPct">% dari entry</div>
-      </div>
-      <div class="card card-blue">
-        <div class="lbl">Posisi Size</div>
-        <div class="val" id="posSize">—</div>
-        <div class="sub2" id="posSizeU">unit</div>
-      </div>
-      <div class="card">
-        <div class="lbl">Risk/Reward Ratio</div>
-        <div class="val" id="rrRatio">—</div>
-        <div class="sub2">semakin tinggi makin baik</div>
-      </div>
-      <div class="card card-green">
-        <div class="lbl">Profit di TP</div>
-        <div class="val" id="profitTP">—</div>
-        <div class="sub2" id="profitPct">% margin</div>
-      </div>
-      <div class="card card-orange">
-        <div class="lbl">Loss di SL</div>
-        <div class="val" id="lossAtSL">—</div>
-        <div class="sub2" id="lossPct">% margin</div>
-      </div>
-      <div class="card">
-        <div class="lbl">% Modal Dipakai</div>
-        <div class="val" id="marginUsed">—</div>
-        <div class="sub2">dari total wallet</div>
-      </div>
-    </div>
-
-    <div id="warnBox" class="warn-box"></div>
-  </div>
-
-  <div class="divider"></div>
-
-  <div class="section">
-    <div class="section-label">jarak ke level kritis</div>
-    <table class="info-table">
-      <tr><td>Entry → Take Profit</td><td id="entryToTP">—</td></tr>
-      <tr><td>Entry → Stop Loss</td><td id="entryToSL">—</td></tr>
-      <tr><td>Entry → Likuidasi</td><td id="entryToLiq">—</td></tr>
-      <tr><td>SL → Likuidasi (buffer aman)</td><td id="slToLiq">—</td></tr>
-    </table>
-
-    <div class="risk-label">Risiko loss terhadap total wallet</div>
-    <div class="risk-bar-bg"><div class="risk-bar-fill" id="riskBar" style="width:0%"></div></div>
-    <div class="risk-note" id="riskNote">—</div>
-  </div>
-
-  <div class="chart-box">
-    <div class="chart-box-header">
-      <span>Visualisasi Level Harga</span>
-      <span id="dirBadge" class="badge long">LONG</span>
-    </div>
-    <div class="legend">
-      <div class="legend-item"><div class="legend-dot" style="background:#4a9eff;height:2px;border-top:2px dashed #4a9eff;width:16px;"></div> Entry</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#00c076;height:2px;border-top:2px dashed #00c076;width:16px;"></div> TP</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#f0a030;height:2px;border-top:2px dashed #f0a030;width:16px;"></div> SL</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#ef5350;width:16px;height:2px;"></div> Likuidasi</div>
-    </div>
-    <div style="position:relative; width:100%; height:280px;">
-      <canvas id="priceChart" role="img" aria-label="Chart level harga entry, TP, SL, dan likuidasi">Level harga tidak tersedia.</canvas>
-    </div>
-  </div>
-
-  <div class="footer">
-    Formula likuidasi: model isolated margin standar (Binance-style). Harga likuidasi aktual bisa berbeda sedikit tergantung exchange, fee, dan funding rate. Gunakan ini sebagai panduan planning, bukan angka pasti.
-  </div>
-
-</div>
-
+  <div id="results"></div>
+  <div style="margin-top:16px;font-size:11px;color:var(--text3);line-height:1.7">Formula: isolated margin per exchange, sudah termasuk fee open+close. Harga likuidasi aktual bisa berbeda akibat mark price, funding rate, dan pembulatan lot. Konfirmasi ke kalkulator resmi exchange sebelum entry.</div>
+</main>
 <script>
-let direction = 'long';
-let chartInst = null;
-
-function setDir(d, btn) {
-  direction = d;
-  document.querySelectorAll('#dirSeg button').forEach(b => {
-    b.classList.remove('active','long','short');
-  });
-  btn.classList.add('active', d);
-  const badge = document.getElementById('dirBadge');
-  badge.textContent = d === 'long' ? 'LONG' : 'SHORT';
-  badge.className = 'badge ' + d;
-  calc();
+const EXCHANGES={
+ bybit:{name:'Bybit',fee:[0.0002,0.00055],mmr:0.005,maxLev:100,inputModel:'notional',note:'Input "Value" = notional posisi. Leverage hanya ubah margin yg dipotong, BUKAN profit.'},
+ binance:{name:'Binance',fee:[0.0002,0.0004],mmr:0.004,maxLev:125,inputModel:'notional',note:'Sama dengan Bybit — "Amount" = notional. Naik/turun leverage tidak ubah profit USDT.'},
+ okx:{name:'OKX',fee:[0.0002,0.0005],mmr:0.004,maxLev:125,inputModel:'notional',note:'Input "Amount" = notional. Model sama dengan Bybit & Binance.'},
+ bitget:{name:'Bitget',fee:[0.0002,0.0006],mmr:0.005,maxLev:125,inputModel:'margin',note:'Input = margin (modal kamu). Notional = margin × leverage. Naik leverage = profit naik.'},
+ bingx:{name:'BingX',fee:[0.0002,0.0005],mmr:0.005,maxLev:150,inputModel:'margin',note:'Input = margin. Model sama dengan Bitget — leverage kalikan profit.'},
+ mexc:{name:'MEXC',fee:[0.0001,0.0004],mmr:0.005,maxLev:200,inputModel:'margin',note:'Input = margin. Fee terendah: maker 0.01%, taker 0.04%.'},
+ custom:{name:'Custom',fee:[0.0002,0.0005],mmr:0.005,maxLev:200,inputModel:'margin',note:'Set fee, MMR, dan model input sesuai exchange pilihanmu.'}
+};
+function resolvePositionSize(iv,lev,m){return m==='notional'?{notional:iv,margin:iv/lev}:{notional:iv*lev,margin:iv};}
+function calcLiqPrice(e,lev,mmr,fo,fc,d){return d==='long'?e*(1-1/lev+mmr+fo+fc):e*(1+1/lev-mmr-fo-fc);}
+function calcPlan(p){const ex=EXCHANGES[p.exchange]||EXCHANGES.bybit;const mmr=p.mmrOverride!=null?p.mmrOverride/100:ex.mmr;const fo=p.orderType==='maker'?ex.fee[0]:ex.fee[1];const fc=ex.fee[1];const{notional,margin}=resolvePositionSize(p.inputValue,p.leverage,ex.inputModel);const qty=notional/p.entry;const liqPrice=calcLiqPrice(p.entry,p.leverage,mmr,fo,fc,p.direction);const liqPct=((liqPrice-p.entry)/p.entry)*100;const feeOpenAmt=notional*fo;const feeCtpAmt=p.tp?(qty*p.tp)*fc:0;const feeCslAmt=p.sl?(qty*p.sl)*fc:0;let grossTP=0,grossSL=0;if(p.direction==='long'){grossTP=p.tp?qty*(p.tp-p.entry):0;grossSL=p.sl?qty*(p.entry-p.sl):0;}else{grossTP=p.tp?qty*(p.entry-p.tp):0;grossSL=p.sl?qty*(p.sl-p.entry):0;}const netTP=grossTP-feeOpenAmt-feeCtpAmt;const netSL=grossSL+feeOpenAmt+feeCslAmt;return{notional,margin,qty,liqPrice,liqPct,feeOpenAmt,feeCtpAmt,feeCslAmt,grossTP,netTP,netSL,profitPct:p.tp?(netTP/margin)*100:0,lossPct:p.sl?(netSL/margin)*100:0,rrRatio:netSL>0?netTP/netSL:0,marginUsedPct:p.wallet?(margin/p.wallet)*100:0,riskWalletPct:p.wallet&&netSL>0?Math.min((netSL/p.wallet)*100,100):0,entryToTP:p.tp?Math.abs(((p.tp-p.entry)/p.entry)*100):null,entryToSL:p.sl?Math.abs(((p.sl-p.entry)/p.entry)*100):null,entryToLiq:Math.abs(liqPct),slToLiq:p.sl?Math.abs(((liqPrice-p.sl)/p.sl)*100):null};}
+function compareExchanges(p){return Object.entries(EXCHANGES).filter(([k])=>k!=='custom').map(([key,ex])=>{const fo=p.orderType==='maker'?ex.fee[0]:ex.fee[1];const fc=ex.fee[1];const{notional,margin}=resolvePositionSize(p.inputValue,p.leverage,ex.inputModel);const qty=notional/p.entry;const liq=calcLiqPrice(p.entry,p.leverage,ex.mmr,fo,fc,p.direction);const feeOpenAmt=notional*fo;const feeCtpAmt=p.tp?(qty*p.tp)*fc:0;const grossTP=p.tp?(p.direction==='long'?qty*(p.tp-p.entry):qty*(p.entry-p.tp)):0;return{key,name:ex.name,liq,netTP:grossTP-feeOpenAmt-feeCtpAmt,inputModel:ex.inputModel};});}
+function fmt(n,d=2){return Number(n.toFixed(d)).toLocaleString('en-US');}
+const f={exchange:'bybit',direction:'long',orderType:'maker'};
+const $=id=>document.getElementById(id);
+const isNot=()=>EXCHANGES[f.exchange].inputModel==='notional';
+function renderEx(){const wrap=$('ex-buttons');wrap.innerHTML='';Object.entries(EXCHANGES).forEach(([k,e])=>{const b=document.createElement('button');const on=k===f.exchange;b.style.cssText='display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 14px;border:1px solid '+(on?'var(--blue)':'var(--border)')+';border-radius:var(--radius);background:'+(on?'var(--blue-dim)':'var(--bg2)')+';cursor:pointer;min-width:68px;transition:all .15s';b.innerHTML='<span style="font-size:12px;font-weight:700;color:'+(on?'var(--blue-t)':'var(--text)')+'">'+e.name+'</span><span style="font-size:10px;color:'+(on?'var(--blue)':'var(--text3)')+'">T:'+(e.fee[1]*100).toFixed(3)+'%</span>';b.onclick=()=>{f.exchange=k;render();};wrap.appendChild(b);});const ex=EXCHANGES[f.exchange];const fc=ex.fee[1]<=0.0004?'var(--green-t)':ex.fee[1]<=0.00055?'var(--orange-t)':'var(--red-t)';$('ex-info').innerHTML='<span><span style="color:var(--text3);margin-right:4px">Maker:</span><strong>'+(ex.fee[0]*100).toFixed(3)+'%</strong></span><span><span style="color:var(--text3);margin-right:4px">Taker:</span><strong style="color:'+fc+'">'+(ex.fee[1]*100).toFixed(3)+'%</strong></span><span><span style="color:var(--text3);margin-right:4px">MMR:</span><strong>'+(ex.mmr*100).toFixed(2)+'%</strong></span><span><span style="color:var(--text3);margin-right:4px">Max lev:</span><strong>'+ex.maxLev+'×</strong></span><span style="flex:1;color:var(--text2)">'+ex.note+'</span>';}
+function renderLev(){const g=$('lev-grid');const lev=parseFloat($('i-lev').value)||1;g.innerHTML='';[5,10,20,50,100].forEach(v=>{const b=document.createElement('button');b.className='lev-btn'+(lev===v?' active':'');b.textContent=v+'×';b.onclick=()=>{$('i-lev').value=v;render();};g.appendChild(b);});}
+function render(){
+ const ex=EXCHANGES[f.exchange];const n=isNot();
+ $('iv-label').textContent=n?'Value / Notional (USDT)':'Margin / Modal (USDT)';
+ $('iv-label').style.color=n?'var(--blue-t)':'var(--purple)';
+ $('iv-note').innerHTML=n?'Total ukuran posisi. Margin = Value &divide; leverage.':'Modal kamu. Notional = Margin &times; leverage.';
+ const mb=$('model-banner');mb.style.background=n?'rgba(74,158,255,0.08)':'rgba(167,139,250,0.08)';mb.style.border='1px solid '+(n?'rgba(74,158,255,0.3)':'rgba(167,139,250,0.3)');
+ mb.innerHTML='<strong style="color:'+(n?'var(--blue-t)':'var(--purple)')+';display:block;margin-bottom:3px">'+(n?'📊 Model Notional-Fixed (Bybit / Binance / OKX)':'💰 Model Margin-Fixed (Bitget / BingX / MEXC)')+'</strong>'+(n?'Input <strong>Value</strong> = total ukuran posisi (notional). Leverage hanya menentukan berapa margin yang dipotong. <strong>Naik/turun leverage tidak mengubah profit USDT.</strong>':'Input <strong>Margin</strong> = modal yang kamu keluarkan. Notional = Margin × Leverage. <strong>Naik leverage = profit naik.</strong>');
+ [...$('dir-seg').children].forEach(b=>{b.className=b.dataset.dir===f.direction?f.direction:'';});
+ [...$('ot-seg').children].forEach(b=>{b.removeAttribute('style');b.className='btn btn-secondary btn-sm';if(b.dataset.ot===f.orderType){b.style.background='var(--purple-dim)';b.style.borderColor='var(--purple)';b.style.color='var(--purple)';}});
+ renderLev();
+ const entry=parseFloat($('i-entry').value)||0,wallet=parseFloat($('i-wallet').value)||0,iv=parseFloat($('i-iv').value)||0,lev=parseFloat($('i-lev').value)||1,tp=parseFloat($('i-tp').value)||0,sl=parseFloat($('i-sl').value)||0,mmrOv=$('i-mmr').value!==''?parseFloat($('i-mmr').value):null;
+ const ready=entry>0&&iv>0&&lev>=1;
+ const r=ready?calcPlan({exchange:f.exchange,direction:f.direction,orderType:f.orderType,entry,wallet,inputValue:iv,leverage:lev,tp,sl,mmrOverride:mmrOv}):null;
+ $('eff-line').innerHTML=r?'<span>Margin efektif: <strong style="color:var(--orange-t)">$'+fmt(r.margin,2)+' USDT</strong></span><span>Notional: <strong style="color:var(--blue-t)">$'+fmt(r.notional,2)+' USDT</strong></span><span>Qty: <strong>'+r.qty.toFixed(4)+' unit</strong></span>':'';
+ const cmp=ready&&tp>0&&sl>0?compareExchanges({direction:f.direction,orderType:f.orderType,entry,wallet,inputValue:iv,leverage:lev,tp,sl}):null;
+ const warns=[];
+ if(r){if(r.marginUsedPct>30)warns.push('Margin >30% wallet — terlalu besar, risiko tinggi.');if(lev>ex.maxLev)warns.push('Leverage '+lev+'× melebihi batas '+ex.name+' ('+ex.maxLev+'×).');if(lev>=50)warns.push('Leverage '+lev+'× sangat tinggi. Likuidasi sangat mepet ke entry.');if(r.slToLiq!==null&&r.slToLiq<1.5)warns.push('Buffer SL→Liq <1.5%! Slippage bisa picu likuidasi sebelum SL.');if(r.rrRatio>0&&r.rrRatio<1.5)warns.push('Risk/Reward <1:1.5 — profit terlalu kecil dibanding risiko.');if(f.direction==='long'&&sl>0&&sl>=entry)warns.push('SL (Long) harus di BAWAH entry.');if(f.direction==='short'&&sl>0&&sl<=entry)warns.push('SL (Short) harus di ATAS entry.');if(f.direction==='long'&&tp>0&&tp<=entry)warns.push('TP (Long) harus di ATAS entry.');if(f.direction==='short'&&tp>0&&tp>=entry)warns.push('TP (Short) harus di BAWAH entry.');if(r.netTP>0&&r.grossTP>0&&(r.netTP/r.grossTP)<0.85)warns.push('Fee memakan >'+(100-Math.round((r.netTP/r.grossTP)*100))+'% dari gross profit.');}
+ const riskColor=r&&r.riskWalletPct>10?'#ef5350':r&&r.riskWalletPct>5?'#f0a030':'#00c076';
+ const out=$('results');
+ if(!r){out.innerHTML='<div style="color:var(--text3);font-size:13px">Isi entry, value, dan leverage untuk melihat hasil.</div>';return;}
+ const feeRows=[['Fee Open','-$'+fmt(r.feeOpenAmt,6)],['Fee Close di TP (taker)',tp>0?'-$'+fmt(r.feeCtpAmt,6):'—'],['Fee Close di SL (taker)',sl>0?'-$'+fmt(r.feeCslAmt,6):'—'],['Total round-trip ke TP',tp>0?'-$'+fmt(r.feeOpenAmt+r.feeCtpAmt,6):'—'],['Total round-trip ke SL',sl>0?'-$'+fmt(r.feeOpenAmt+r.feeCslAmt,6):'—']];
+ const dist=[['Entry → Take Profit',r.entryToTP!==null?r.entryToTP.toFixed(2)+'% ('+(f.direction==='long'?'↑':'↓')+')':'—'],['Entry → Stop Loss',r.entryToSL!==null?r.entryToSL.toFixed(2)+'% ('+(f.direction==='long'?'↓':'↑')+')':'—'],['Entry → Likuidasi',r.entryToLiq.toFixed(2)+'% ('+(f.direction==='long'?'↓':'↑')+')'],['SL → Likuidasi (buffer aman)',r.slToLiq!==null?r.slToLiq.toFixed(2)+'% ('+(f.direction==='long'?'↓':'↑')+')':'—']];
+ out.innerHTML='<div class="section"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><div class="section-label" style="margin-bottom:0">Hasil Kalkulasi</div><button class="btn btn-primary btn-sm">💾 Simpan Plan</button></div>'
+ +'<div class="cards">'
+ +'<div class="card c-red"><div class="card-label">Harga Likuidasi</div><div class="card-val">$'+fmt(r.liqPrice,r.liqPrice>1?4:6)+'</div><div class="card-sub">'+(r.liqPct>=0?'+':'')+r.liqPct.toFixed(2)+'% dari entry</div></div>'
+ +'<div class="card c-blue"><div class="card-label">Notional / Posisi</div><div class="card-val">$'+fmt(r.notional)+'</div><div class="card-sub">Margin: $'+fmt(r.margin,4)+'</div></div>'
+ +'<div class="card c-purple"><div class="card-label">Risk / Reward</div><div class="card-val">'+(r.rrRatio>0?'1 : '+r.rrRatio.toFixed(2):'—')+'</div><div class="card-sub">net setelah fee</div></div>'
+ +'<div class="card c-green"><div class="card-label">Profit Bersih di TP</div><div class="card-val">'+(tp>0?(r.netTP>=0?'+':'')+'$'+fmt(Math.abs(r.netTP),4):'—')+'</div><div class="card-sub">'+(tp>0?(r.profitPct>=0?'+':'')+r.profitPct.toFixed(1)+'% margin':'—')+'</div></div>'
+ +'<div class="card c-orange"><div class="card-label">Loss Bersih di SL</div><div class="card-val">'+(sl>0?'-$'+fmt(r.netSL,4):'—')+'</div><div class="card-sub">'+(sl>0?'-'+r.lossPct.toFixed(1)+'% margin':'—')+'</div></div>'
+ +'<div class="card"><div class="card-label">% Margin di Wallet</div><div class="card-val">'+r.marginUsedPct.toFixed(1)+'%</div><div class="card-sub">$'+fmt(r.margin,2)+' dari $'+fmt(wallet,0)+'</div></div>'
+ +'</div>'
+ +'<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:12px"><div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">Rincian Fee ('+(f.orderType==='maker'?'Limit/Maker':'Market/Taker')+')</div>'
+ +feeRows.map((row,i)=>'<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0;'+(i<4?'border-bottom:1px solid var(--bg3);':'')+'font-weight:'+(i>=3?600:400)+'"><span style="color:var(--text2)">'+row[0]+'</span><span style="color:var(--red-t);font-variant-numeric:tabular-nums">'+row[1]+'</span></div>').join('')+'</div>'
+ +(warns.length?'<div class="warn-box">⚠️ '+warns.join('\n⚠️ ')+'</div>':'')
+ +'</div><div class="divider"></div>'
+ +'<div class="section"><div class="section-label">Jarak ke Level Kritis</div><table class="info-table"><tbody>'
+ +dist.map(row=>'<tr><td>'+row[0]+'</td><td>'+row[1]+'</td></tr>').join('')+'</tbody></table>'
+ +'<div style="font-size:11px;color:var(--text3);margin-bottom:5px">Risiko loss vs total wallet</div>'
+ +'<div class="risk-bar-bg"><div class="risk-bar-fill" style="width:'+r.riskWalletPct.toFixed(1)+'%;background:'+riskColor+'"></div></div>'
+ +'<div style="font-size:11px;color:var(--text3);margin-bottom:14px">'+(sl>0&&r.netSL>0?'Loss di SL (net) = '+r.riskWalletPct.toFixed(1)+'% dari wallet ($'+fmt(r.netSL,4)+')':'Set SL untuk lihat risiko vs wallet')+'</div>'
+ +(cmp?'<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px"><div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">Perbandingan antar Exchange — input sama, model masing-masing</div><div style="font-size:10px;color:var(--text3);margin-bottom:8px">⚠️ Notional bisa berbeda antar exchange karena model input berbeda</div>'
+ +(function(){const mx=Math.max.apply(null,cmp.map(x=>x.netTP)),mn=Math.min.apply(null,cmp.map(x=>x.netTP));return cmp.map((row,i)=>{const best=Math.abs(row.netTP-mx)<1e-4,worst=Math.abs(row.netTP-mn)<1e-4&&mx!==mn,act=row.key===f.exchange;return '<div style="display:flex;justify-content:space-between;font-size:11px;padding:'+(act?'4px 8px':'4px 0')+';margin:'+(act?'0 -8px':'0')+';'+(i<cmp.length-1?'border-bottom:1px solid var(--bg3);':'')+'background:'+(act?'var(--bg3)':'transparent')+'"><span style="color:var(--text2);width:68px">'+(act?'<b>'+row.name+'</b>':row.name)+'</span><span style="color:var(--text3);font-size:10px;padding:1px 5px;background:var(--bg4);border-radius:4px">'+(row.inputModel==='notional'?'Notional-fixed':'Margin-fixed')+'</span><span style="color:var(--text3);font-variant-numeric:tabular-nums">Liq $'+fmt(row.liq,row.liq>1?2:5)+'</span><span style="font-variant-numeric:tabular-nums;font-weight:600;color:'+(best?'var(--green-t)':worst?'var(--red-t)':'var(--text)')+'">'+(row.netTP>=0?'+':'')+'$'+fmt(row.netTP,4)+' '+(best?'🏆':'')+'</span></div>';}).join('');})()+'</div>':'')
+ +'<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-top:14px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><span style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.05em">Visualisasi Level Harga</span><span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:100px;background:'+(f.direction==='long'?'var(--green-dim)':'var(--red-dim)')+';color:'+(f.direction==='long'?'var(--green-t)':'var(--red-t)')+'">'+f.direction.toUpperCase()+'</span></div><div style="position:relative;width:100%;height:240px"><canvas id="cv"></canvas></div></div>'
+ +'</div>';
+ drawChart(entry,tp,sl,r.liqPrice);
 }
-
-function setLev(v, btn) {
-  document.querySelectorAll('.lev-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('leverage').value = v;
-  calc();
-}
-
-function focusCustomLev(btn) {
-  document.querySelectorAll('.lev-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('leverage').focus();
-  document.getElementById('leverage').select();
-}
-
-function syncLevBtn() {
-  document.querySelectorAll('.lev-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('levCustomBtn').classList.add('active');
-  calc();
-}
-
-function syncPct() {
-  const wallet = parseFloat(document.getElementById('walletBalance').value) || 0;
-  const margin = parseFloat(document.getElementById('margin').value) || 0;
-  if (wallet > 0) {
-    document.getElementById('marginPct').value = ((margin / wallet) * 100).toFixed(1);
-  }
-  calc();
-}
-
-function calcFromPct() {
-  const wallet = parseFloat(document.getElementById('walletBalance').value) || 0;
-  const pct = parseFloat(document.getElementById('marginPct').value) || 0;
-  document.getElementById('margin').value = (wallet * pct / 100).toFixed(2);
-  calc();
-}
-
-function fmt(n, dec = 2) { return Number(n.toFixed(dec)).toLocaleString('en-US'); }
-
-function calc() {
-  const entry   = parseFloat(document.getElementById('entryPrice').value) || 0;
-  const wallet  = parseFloat(document.getElementById('walletBalance').value) || 0;
-  const margin  = parseFloat(document.getElementById('margin').value) || 0;
-  const lev     = parseFloat(document.getElementById('leverage').value) || 1;
-  const tp      = parseFloat(document.getElementById('tp').value) || 0;
-  const sl      = parseFloat(document.getElementById('sl').value) || 0;
-  const mmr     = (parseFloat(document.getElementById('mmr').value) || 0.5) / 100;
-
-  if (!entry || !margin || !lev) return;
-
-  const positionSize = margin * lev;
-  const positionQty  = positionSize / entry;
-
-  let liqPrice;
-  if (direction === 'long') {
-    liqPrice = entry * (1 - 1/lev + mmr);
-  } else {
-    liqPrice = entry * (1 + 1/lev - mmr);
-  }
-
-  const liqPctFromEntry = ((liqPrice - entry) / entry) * 100;
-
-  let profitTP = 0, profitPct = 0, lossAtSL = 0, lossPct = 0;
-  if (direction === 'long') {
-    profitTP  = tp > 0 ? ((tp - entry) / entry) * positionSize : 0;
-    profitPct = tp > 0 ? ((tp - entry) / entry) * lev * 100 : 0;
-    lossAtSL  = sl > 0 ? ((entry - sl) / entry) * positionSize : 0;
-    lossPct   = sl > 0 ? ((entry - sl) / entry) * lev * 100 : 0;
-  } else {
-    profitTP  = tp > 0 ? ((entry - tp) / entry) * positionSize : 0;
-    profitPct = tp > 0 ? ((entry - tp) / entry) * lev * 100 : 0;
-    lossAtSL  = sl > 0 ? ((sl - entry) / entry) * positionSize : 0;
-    lossPct   = sl > 0 ? ((sl - entry) / entry) * lev * 100 : 0;
-  }
-
-  const rrRatio      = lossAtSL > 0 ? profitTP / lossAtSL : 0;
-  const marginUsedPct = wallet > 0 ? (margin / wallet) * 100 : 0;
-
-  document.getElementById('liqPrice').textContent  = '$' + fmt(liqPrice, liqPrice > 100 ? 1 : 4);
-  document.getElementById('liqPct').textContent    = (liqPctFromEntry >= 0 ? '+' : '') + liqPctFromEntry.toFixed(2) + '% dari entry';
-  document.getElementById('posSize').textContent   = '$' + fmt(positionSize);
-  document.getElementById('posSizeU').textContent  = positionQty.toFixed(6) + ' unit';
-  document.getElementById('profitTP').textContent  = tp > 0 ? '+$' + fmt(profitTP) : '—';
-  document.getElementById('profitPct').textContent = tp > 0 ? '+' + profitPct.toFixed(1) + '% margin' : '—';
-  document.getElementById('lossAtSL').textContent  = sl > 0 ? '-$' + fmt(lossAtSL) : '—';
-  document.getElementById('lossPct').textContent   = sl > 0 ? '-' + lossPct.toFixed(1) + '% margin' : '—';
-  document.getElementById('rrRatio').textContent   = rrRatio > 0 ? '1 : ' + rrRatio.toFixed(2) : '—';
-  document.getElementById('marginUsed').textContent = marginUsedPct.toFixed(1) + '%';
-
-  const entryToTP  = tp > 0 ? Math.abs(((tp - entry) / entry) * 100) : null;
-  const entryToSL  = sl > 0 ? Math.abs(((sl - entry) / entry) * 100) : null;
-  const entryToLiq = Math.abs(liqPctFromEntry);
-  const slToLiq    = sl > 0 ? Math.abs(((liqPrice - sl) / sl) * 100) : null;
-
-  const arrow = direction === 'long';
-  document.getElementById('entryToTP').textContent  = entryToTP  !== null ? entryToTP.toFixed(2) + '% (' + (arrow ? '↑' : '↓') + ')' : '—';
-  document.getElementById('entryToSL').textContent  = entryToSL  !== null ? entryToSL.toFixed(2) + '% (' + (arrow ? '↓' : '↑') + ')' : '—';
-  document.getElementById('entryToLiq').textContent = entryToLiq.toFixed(2) + '% (' + (arrow ? '↓' : '↑') + ')';
-  document.getElementById('slToLiq').textContent    = slToLiq !== null ? slToLiq.toFixed(2) + '% (' + (arrow ? '↓' : '↑') + ')' : '—';
-
-  const riskPct = wallet > 0 && lossAtSL > 0 ? Math.min((lossAtSL / wallet) * 100, 100) : 0;
-  const bar = document.getElementById('riskBar');
-  bar.style.width = riskPct.toFixed(1) + '%';
-  bar.style.background = riskPct > 10 ? '#ef5350' : riskPct > 5 ? '#f0a030' : '#00c076';
-  document.getElementById('riskNote').textContent = lossAtSL > 0
-    ? 'Loss di SL = ' + riskPct.toFixed(1) + '% dari wallet ($' + fmt(lossAtSL) + ')'
-    : 'Set SL untuk melihat risiko terhadap wallet';
-
-  const warns = [];
-  if (marginUsedPct > 30)                warns.push('Margin >30% wallet — terlalu besar, risiko tinggi.');
-  if (lev >= 50)                          warns.push('Leverage ' + lev + '× sangat tinggi, harga likuidasi sangat mepet ke entry.');
-  if (slToLiq !== null && slToLiq < 1.5) warns.push('Buffer SL → Likuidasi < 1.5%! Slippage atau gap bisa memicu likuidasi sebelum SL ter-hit.');
-  if (rrRatio > 0 && rrRatio < 1.5)      warns.push('Risk/Reward < 1:1.5 — profit terlalu kecil dibanding risiko.');
-  if (direction === 'long'  && sl > 0 && sl >= entry) warns.push('SL (Long) harus di BAWAH harga entry.');
-  if (direction === 'short' && sl > 0 && sl <= entry) warns.push('SL (Short) harus di ATAS harga entry.');
-  if (direction === 'long'  && tp > 0 && tp <= entry) warns.push('TP (Long) harus di ATAS harga entry.');
-  if (direction === 'short' && tp > 0 && tp >= entry) warns.push('TP (Short) harus di BAWAH harga entry.');
-
-  const warnBox = document.getElementById('warnBox');
-  if (warns.length > 0) {
-    warnBox.innerHTML = '⚠️ ' + warns.join('<br>⚠️ ');
-    warnBox.classList.add('show');
-  } else {
-    warnBox.classList.remove('show');
-  }
-
-  updateChart(entry, tp, sl, liqPrice, direction);
-}
-
-function updateChart(entry, tp, sl, liqPrice, dir) {
-  const ctx = document.getElementById('priceChart').getContext('2d');
-  if (chartInst) { chartInst.destroy(); }
-
-  const allPrices = [entry, tp, sl, liqPrice].filter(p => p > 0);
-  if (allPrices.length < 2) return;
-  const minP  = Math.min(...allPrices);
-  const maxP  = Math.max(...allPrices);
-  const range = maxP - minP || entry * 0.05;
-  const pad   = range * 0.18;
-  const yMin  = minP - pad;
-  const yMax  = maxP + pad;
-
-  const ENTRY_C = '#4a9eff';
-  const TP_C    = '#00c076';
-  const SL_C    = '#f0a030';
-  const LIQ_C   = '#ef5350';
-
-  chartInst = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: Array.from({length: 10}, (_,i) => ''),
-      datasets: [{ data: Array(10).fill(null), borderWidth: 0, pointRadius: 0 }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false }, tooltip: { enabled: false } },
-      scales: {
-        x: { display: false },
-        y: {
-          min: yMin, max: yMax,
-          grid: { color: 'rgba(255,255,255,0.05)' },
-          ticks: {
-            color: '#5a5f75', font: { size: 11 },
-            callback: v => '$' + Number(v.toFixed(v > 1000 ? 0 : 2)).toLocaleString()
-          }
-        }
-      }
-    },
-    plugins: [{
-      id: 'levels',
-      beforeDraw(chart) {
-        const { ctx: c, chartArea: { left, right }, scales: { y } } = chart;
-        const levels = [
-          { p: entry,    color: ENTRY_C, label: 'ENTRY',    dash: true  },
-          tp > 0 ? { p: tp, color: TP_C, label: 'TP',       dash: true  } : null,
-          sl > 0 ? { p: sl, color: SL_C, label: 'SL',       dash: true  } : null,
-          { p: liqPrice, color: LIQ_C,   label: 'LIKUIDASI',dash: false }
-        ].filter(Boolean);
-
-        levels.forEach(({ p, color, label, dash }) => {
-          const yy = y.getPixelForValue(p);
-          c.save();
-          c.strokeStyle = color;
-          c.lineWidth   = label === 'LIKUIDASI' ? 2 : 1.5;
-          c.globalAlpha = 0.9;
-          if (dash) c.setLineDash([6, 4]);
-          c.beginPath(); c.moveTo(left, yy); c.lineTo(right, yy); c.stroke();
-          c.setLineDash([]); c.globalAlpha = 1;
-
-          const txt = label + '  $' + Number(p.toFixed(p > 100 ? 0 : 4)).toLocaleString();
-          c.font = '600 11px -apple-system, sans-serif';
-          const tw = c.measureText(txt).width;
-
-          c.fillStyle = color + '28';
-          c.fillRect(left, yy - 11, tw + 16, 14);
-          c.fillStyle = color;
-          c.fillText(txt, left + 8, yy);
-          c.restore();
-        });
-
-        if (tp > 0 && sl > 0) {
-          const yEntry = y.getPixelForValue(entry);
-          const yTP    = y.getPixelForValue(tp);
-          const yLiq   = y.getPixelForValue(liqPrice);
-
-          c.save();
-          c.globalAlpha = 0.06;
-          c.fillStyle = TP_C;
-          c.fillRect(left, Math.min(yEntry, yTP), right - left, Math.abs(yEntry - yTP));
-          c.fillStyle = LIQ_C;
-          c.fillRect(left, Math.min(yEntry, yLiq), right - left, Math.abs(yEntry - yLiq));
-          c.restore();
-        }
-      }
-    }]
-  });
-}
-
-calc();
+function drawChart(entry,tp,sl,liq){const cv=$('cv');if(!cv)return;const dpr=window.devicePixelRatio||1;const w=cv.parentElement.clientWidth,h=240;cv.width=w*dpr;cv.height=h*dpr;cv.style.width=w+'px';cv.style.height=h+'px';const c=cv.getContext('2d');c.setTransform(dpr,0,0,dpr,0,0);const all=[entry,tp,sl,liq].filter(p=>p>0);if(all.length<2)return;const mn=Math.min.apply(null,all),mx=Math.max.apply(null,all),rng=(mx-mn)||entry*0.05,pad=rng*0.2,lo=mn-pad,hi=mx+pad;const Y=p=>h-((p-lo)/(hi-lo))*h;const EC='#4a9eff',TC='#00c076',SC='#f0a030',LC='#ef5350';c.clearRect(0,0,w,h);if(tp>0){c.save();c.globalAlpha=0.07;c.fillStyle=TC;c.fillRect(0,Math.min(Y(entry),Y(tp)),w,Math.abs(Y(entry)-Y(tp)));c.restore();}c.save();c.globalAlpha=0.08;c.fillStyle=LC;c.fillRect(0,Math.min(Y(entry),Y(liq)),w,Math.abs(Y(entry)-Y(liq)));c.restore();const levels=[{p:entry,col:EC,lb:'ENTRY',d:1}];if(tp>0)levels.push({p:tp,col:TC,lb:'TP',d:1});if(sl>0)levels.push({p:sl,col:SC,lb:'SL',d:1});levels.push({p:liq,col:LC,lb:'LIKUIDASI',d:0});levels.forEach(L=>{const yy=Y(L.p);c.save();c.strokeStyle=L.col;c.lineWidth=L.lb==='LIKUIDASI'?2:1.5;c.globalAlpha=0.9;if(L.d)c.setLineDash([6,4]);c.beginPath();c.moveTo(0,yy);c.lineTo(w,yy);c.stroke();c.setLineDash([]);c.globalAlpha=1;const txt=L.lb+'  $'+Number(L.p.toFixed(L.p>100?0:4)).toLocaleString();c.font='600 11px -apple-system,sans-serif';const tw=c.measureText(txt).width;c.fillStyle=L.col+'28';c.fillRect(0,yy-11,tw+16,15);c.fillStyle=L.col;c.fillText(txt,8,yy+1);c.restore();});}
+[...$('dir-seg').children].forEach(b=>b.onclick=()=>{f.direction=b.dataset.dir;render();});
+[...$('ot-seg').children].forEach(b=>b.onclick=()=>{f.orderType=b.dataset.ot;render();});
+['i-entry','i-wallet','i-iv','i-pct','i-lev','i-tp','i-sl','i-mmr'].forEach(id=>$(id).addEventListener('input',render));
+window.addEventListener('resize',()=>{if($('cv'))render();});
+renderEx();render();
 </script>
 </body>
 </html>
