@@ -380,6 +380,39 @@
         </div>
       </div>
 
+
+      <!-- Validasi Retur -->
+      <div class="card" onclick="toggleCard(this)">
+        <div class="card-body">
+          <div class="card-top">
+            <div class="card-icon icon-finance"><i class="ti ti-receipt-refund" aria-hidden="true"></i></div>
+            <div class="card-top-right">
+              <span class="card-badge badge-finance">AI-Powered</span>
+              <div class="expand-btn"><i class="ti ti-chevron-down"></i></div>
+            </div>
+          </div>
+          <p class="card-title">Validasi Retur Emas</p>
+          <p class="card-desc">Menggantikan pengecekan manual nota retur: AI membaca nota dan stiker retur, sistem menghitung ulang berat 22K/24K dan kadar, mencocokkan dengan laporan program, lalu memvalidasi otomatis atau meneruskan ke audit.</p>
+          <div class="card-tech">
+            <span class="tech">Vision AI</span>
+            <span class="tech">HTML/JS</span>
+            <span class="tech">IndexedDB</span>
+            <span class="tech">jsPDF</span>
+          </div>
+        </div>
+        <div class="card-drawer">
+          <div class="card-drawer-inner">
+            <p style="font-size:0.8rem;color:#505050;margin-bottom:12px;font-family:var(--font-mono)">Login: ketik username apa saja (akun pertama berperan Audit). Pembacaan AI butuh API key sendiri di Pengaturan; data hanya tersimpan di browser Anda.</p>
+            <div class="drawer-actions">
+              <button class="drawer-close" onclick="closeCard(event,this)"><i class="ti ti-x"></i> Tutup</button>
+              <a class="drawer-demo-link" href="validasi-retur.html" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+                <i class="ti ti-external-link"></i> Open Validasi Retur
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </section>
 
