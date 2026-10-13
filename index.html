@@ -445,6 +445,38 @@
         </div>
       </div>
 
+      <!-- Finance Tracker (Net Worth & Cash Flow) -->
+      <div class="card" onclick="toggleCard(this)">
+        <div class="card-body">
+          <div class="card-top">
+            <div class="card-icon icon-finance"><i class="ti ti-chart-line" aria-hidden="true"></i></div>
+            <div class="card-top-right">
+              <span class="card-badge badge-finance">Live Demo</span>
+              <div class="expand-btn"><i class="ti ti-chevron-down"></i></div>
+            </div>
+          </div>
+          <p class="card-title">Finance Tracker — Net Worth &amp; Cash Flow</p>
+          <p class="card-desc">Template pelacak aset, utang, dan arus kas dengan rekap harian, mingguan, dan bulanan. Dashboard menampilkan pertumbuhan kekayaan bersih, alokasi aset dan utang, budget vs aktual, serta target Financial Freedom dan dana darurat.</p>
+          <div class="card-tech">
+            <span class="tech">Apps Script</span>
+            <span class="tech">Google Sheets</span>
+            <span class="tech">Chart.js</span>
+            <span class="tech">HTML/JS</span>
+          </div>
+        </div>
+        <div class="card-drawer">
+          <div class="card-drawer-inner">
+            <p style="font-size:0.8rem;color:#505050;margin-bottom:12px;font-family:var(--font-mono)">Demo berisi data fiktif dan tersimpan hanya selama halaman terbuka. Coba ganti rekap Harian/Mingguan/Bulanan, tambah transaksi atau update saldo di tab Input, lalu lihat dashboard berubah. Tersedia bahasa ID/EN dan mode gelap.</p>
+            <div class="drawer-actions">
+              <button class="drawer-close" onclick="closeCard(event,this)"><i class="ti ti-x"></i> Tutup</button>
+              <a class="drawer-demo-link" href="finance-tracker-demo.html" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+                <i class="ti ti-external-link"></i> Open Live Demo
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </section>
 
