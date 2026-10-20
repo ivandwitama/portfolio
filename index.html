@@ -327,19 +327,33 @@
     .js .reveal { opacity: 1; translate: none; }
     .card { transform: none !important; }
   }
+
+  /* Language toggle */
+  .lang-toggle { position: fixed; top: 14px; right: 16px; z-index: 21; display: flex; padding: 3px; gap: 2px;
+    background: rgba(16,16,16,.75); border: .5px solid #2a2a2a; border-radius: 999px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+  .lang-toggle button { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .05em; color: #666; background: none; border: none;
+    padding: 5px 10px; border-radius: 999px; cursor: pointer; transition: color .2s, background .2s; }
+  .lang-toggle button:hover { color: #bbb; }
+  .lang-toggle button[aria-pressed="true"] { background: #222; color: var(--accent-gold); }
+  @media (max-width: 480px) { .lang-toggle { top: 12px; right: 12px; } .sec-nav { top: 12px; left: 16px; transform: translate(0, -70px); } .sec-nav.show { transform: translate(0, 0); } }
 </style>
 </head>
 <body>
 <canvas id="scene" aria-hidden="true"></canvas>
 <div class="scene-veil" aria-hidden="true"></div>
 
-<nav class="sec-nav" id="sec-nav" aria-label="Navigasi section">
+<nav class="sec-nav" id="sec-nav" aria-label="Navigasi section" data-en-aria-label="Section navigation">
   <a href="#finance" data-k="finance"><span class="dot"></span>01<span class="lbl"> Finance</span></a>
   <a href="#trading" data-k="trading"><span class="dot"></span>02<span class="lbl"> Trading</span></a>
   <a href="#others" data-k="others"><span class="dot"></span>03<span class="lbl"> Others</span></a>
 </nav>
 
-<button class="fx-toggle" id="fx-toggle" type="button" aria-pressed="true" title="Matikan / nyalakan animasi 3D">
+<div class="lang-toggle" role="group" aria-label="Language">
+  <button type="button" data-lang="en" aria-pressed="true">EN</button>
+  <button type="button" data-lang="id" aria-pressed="false">ID</button>
+</div>
+
+<button class="fx-toggle" id="fx-toggle" type="button" aria-pressed="true" title="Matikan / nyalakan animasi 3D" data-en-title="Turn 3D animation on / off">
   <i class="ti ti-cube" aria-hidden="true"></i><span id="fx-label">3D on</span>
 </button>
 
@@ -360,8 +374,8 @@
       <span class="tag">SAP · Odoo</span>
     </div>
     <div class="hero-foot">
-      <a class="scroll-cue" href="#finance"><i class="ti ti-arrow-down" aria-hidden="true"></i> Lihat project</a>
-      <span class="hero-hint"><i class="ti ti-rotate-360" aria-hidden="true"></i> Geser untuk memutar objek 3D</span>
+      <a class="scroll-cue" href="#finance"><i class="ti ti-arrow-down" aria-hidden="true"></i> <span data-en="View projects">Lihat project</span></a>
+      <span class="hero-hint"><i class="ti ti-rotate-360" aria-hidden="true"></i> <span data-en="Drag to rotate the 3D object">Geser untuk memutar objek 3D</span></span>
     </div>
   </header>
 
@@ -384,7 +398,7 @@
             </div>
           </div>
           <p class="card-title">AI Audit: Invoice &amp; BUPOT Reconciliation</p>
-          <p class="card-desc">Rekonsiliasi ratusan invoice trading emas terhadap dokumen BUPOT pajak menggunakan Claude AI — eliminasi entry manual, verifikasi Nomor Dokumen, berat, kurs, DPP, dan PPh 22 secara otomatis.</p>
+          <p data-en="Reconciles hundreds of gold trading invoices against BUPOT tax documents with Claude AI — no manual entry, with automatic checks on document number, weight, exchange rate, DPP and PPh 22." class="card-desc">Rekonsiliasi ratusan invoice trading emas terhadap dokumen BUPOT pajak menggunakan Claude AI — eliminasi entry manual, verifikasi Nomor Dokumen, berat, kurs, DPP, dan PPh 22 secara otomatis.</p>
           <div class="card-tech">
             <span class="tech">Claude AI</span>
             <span class="tech">PDF</span>
@@ -407,7 +421,7 @@
               </div>
             </div>
             <div class="drawer-actions">
-              <button class="drawer-close" onclick="closeCard(event,this)"><i class="ti ti-x"></i> Tutup</button>
+              <button class="drawer-close" onclick="closeCard(event,this)"><i class="ti ti-x"></i> <span data-en="Close">Tutup</span></button>
             </div>
           </div>
         </div>
@@ -424,7 +438,7 @@
             </div>
           </div>
           <p class="card-title">Financial Statement Dashboard (Google Sheets)</p>
-          <p class="card-desc">Sistem laporan keuangan 6 sheet terintegrasi untuk UKM — satu input jurnal otomatis mengisi P&amp;L, Neraca, dan Cash Flow secara real-time tanpa entry manual terpisah.</p>
+          <p data-en="An integrated 6-sheet financial reporting system for small businesses — a single journal entry automatically fills the P&amp;L, Balance Sheet and Cash Flow in real time, with no separate manual entry." class="card-desc">Sistem laporan keuangan 6 sheet terintegrasi untuk UKM — satu input jurnal otomatis mengisi P&amp;L, Neraca, dan Cash Flow secara real-time tanpa entry manual terpisah.</p>
           <div class="card-tech">
             <span class="tech">Google Sheets</span>
             <span class="tech">P&amp;L</span>
@@ -440,7 +454,7 @@
               </div>
             </div>
             <div class="drawer-actions">
-              <button class="drawer-close" onclick="closeCard(event,this)"><i class="ti ti-x"></i> Tutup</button>
+              <button class="drawer-close" onclick="closeCard(event,this)"><i class="ti ti-x"></i> <span data-en="Close">Tutup</span></button>
             </div>
           </div>
         </div>
@@ -457,7 +471,7 @@
             </div>
           </div>
           <p class="card-title">Coffee Stock — Inventory &amp; Financial System</p>
-          <p class="card-desc">Sistem manajemen stok dan keuangan untuk bisnis biji kopi, dibangun di atas Google Sheets dengan Apps Script. Tersedia demo langsung dengan data dummy.</p>
+          <p data-en="Stock and finance management system for a coffee bean business, built on Google Sheets with Apps Script. A live demo with dummy data is available." class="card-desc">Sistem manajemen stok dan keuangan untuk bisnis biji kopi, dibangun di atas Google Sheets dengan Apps Script. Tersedia demo langsung dengan data dummy.</p>
           <div class="card-tech">
             <span class="tech">Apps Script</span>
             <span class="tech">Google Sheets</span>
@@ -473,7 +487,7 @@
               <span style="color:#505050">password&nbsp;:</span> <span style="color:#c0a060">1234</span>
             </div>
             <div class="drawer-actions">
-              <button class="drawer-close" onclick="closeCard(event,this)"><i class="ti ti-x"></i> Tutup</button>
+              <button class="drawer-close" onclick="closeCard(event,this)"><i class="ti ti-x"></i> <span data-en="Close">Tutup</span></button>
               <a class="drawer-demo-link-green" href="https://script.google.com/macros/s/AKfycbxHKPurTXPRwP-igIM0SzbXXVqYfyLKvzxo-2UznWldTssoj9rSTIUYAzXo2XKW4FPj/exec" target="_blank" rel="noopener" onclick="event.stopPropagation()">
                 <i class="ti ti-external-link"></i> Open Live Demo
               </a>
@@ -493,8 +507,8 @@
               <div class="expand-btn"><i class="ti ti-chevron-down"></i></div>
             </div>
           </div>
-          <p class="card-title">Validasi Nota Retur</p>
-          <p class="card-desc">AI membaca nota retur dan stiker, lalu sistem mencocokkan berat dan kadar dengan laporan program.</p>
+          <p data-en="Return Note Validation" class="card-title">Validasi Nota Retur</p>
+          <p data-en="AI reads return notes and stickers, then the system matches weight and gold purity against the program report." class="card-desc">AI membaca nota retur dan stiker, lalu sistem mencocokkan berat dan kadar dengan laporan program.</p>
           <div class="card-tech">
             <span class="tech">Vision AI</span>
             <span class="tech">HTML/JS</span>
@@ -504,9 +518,9 @@
         </div>
         <div class="card-drawer">
           <div class="card-drawer-inner">
-            <p style="font-size:0.8rem;color:#505050;margin-bottom:12px;font-family:var(--font-mono)">Login: ketik username apa saja (akun pertama berperan Audit). Untuk mencoba tanpa API key, pakai tombol contoh di halaman Scan retur (Lolos semua, Selisih berat, Kadar beda). Data hanya tersimpan di browser Anda.</p>
+            <p data-en="Login: type any username (the first account gets the Audit role). To try it without an API key, use the sample buttons on the Scan retur page (Lolos semua, Selisih berat, Kadar beda). Data is stored only in your browser." style="font-size:0.8rem;color:#505050;margin-bottom:12px;font-family:var(--font-mono)">Login: ketik username apa saja (akun pertama berperan Audit). Untuk mencoba tanpa API key, pakai tombol contoh di halaman Scan retur (Lolos semua, Selisih berat, Kadar beda). Data hanya tersimpan di browser Anda.</p>
             <div class="drawer-actions">
-              <button class="drawer-close" onclick="closeCard(event,this)"><i class="ti ti-x"></i> Tutup</button>
+              <button class="drawer-close" onclick="closeCard(event,this)"><i class="ti ti-x"></i> <span data-en="Close">Tutup</span></button>
               <a class="drawer-demo-link" href="validasi-retur.html" target="_blank" rel="noopener" onclick="event.stopPropagation()">
                 <i class="ti ti-external-link"></i> Open Live Demo
               </a>
@@ -526,7 +540,7 @@
             </div>
           </div>
           <p class="card-title">Neraca Pintar</p>
-          <p class="card-desc">Pembukuan double-entry untuk UMKM: jurnal, persediaan perpetual, PPN, hingga laba rugi dan neraca. AI menyusun draft jurnal dari teks atau foto nota dan menjawab pertanyaan keuangan.</p>
+          <p data-en="Double-entry bookkeeping for small businesses: journals, perpetual inventory, VAT, through to profit &amp; loss and balance sheet. AI drafts journal entries from text or receipt photos and answers finance questions." class="card-desc">Pembukuan double-entry untuk UMKM: jurnal, persediaan perpetual, PPN, hingga laba rugi dan neraca. AI menyusun draft jurnal dari teks atau foto nota dan menjawab pertanyaan keuangan.</p>
           <div class="card-tech">
             <span class="tech">Apps Script</span>
             <span class="tech">Google Sheets</span>
@@ -536,9 +550,9 @@
         </div>
         <div class="card-drawer">
           <div class="card-drawer-inner">
-            <p style="font-size:0.8rem;color:#505050;margin-bottom:12px;font-family:var(--font-mono)">Demo berisi data contoh fiktif dan tersimpan hanya selama halaman terbuka. Coba tanya di Asisten AI ("berapa profit hari ini?", "ada transaksi janggal?") atau ketik transaksi seperti "bayar listrik 1,2jt lewat bank". Jawaban AI di demo disimulasikan; angka tetap dihitung mesin akuntansi aslinya.</p>
+            <p data-en="The demo uses fictional sample data and is kept only while the page is open. Ask the AI Assistant in Indonesian (&quot;berapa profit hari ini?&quot;, &quot;ada transaksi janggal?&quot;) or type a transaction such as &quot;bayar listrik 1,2jt lewat bank&quot;. AI replies in the demo are simulated; the figures are still computed by the real accounting engine." style="font-size:0.8rem;color:#505050;margin-bottom:12px;font-family:var(--font-mono)">Demo berisi data contoh fiktif dan tersimpan hanya selama halaman terbuka. Coba tanya di Asisten AI ("berapa profit hari ini?", "ada transaksi janggal?") atau ketik transaksi seperti "bayar listrik 1,2jt lewat bank". Jawaban AI di demo disimulasikan; angka tetap dihitung mesin akuntansi aslinya.</p>
             <div class="drawer-actions">
-              <button class="drawer-close" onclick="closeCard(event,this)"><i class="ti ti-x"></i> Tutup</button>
+              <button class="drawer-close" onclick="closeCard(event,this)"><i class="ti ti-x"></i> <span data-en="Close">Tutup</span></button>
               <a class="drawer-demo-link" href="neraca-pintar-demo.html" target="_blank" rel="noopener" onclick="event.stopPropagation()">
                 <i class="ti ti-external-link"></i> Open Live Demo
               </a>
@@ -558,7 +572,7 @@
             </div>
           </div>
           <p class="card-title">Finance Tracker — Net Worth &amp; Cash Flow</p>
-          <p class="card-desc">Template pelacak aset, utang, dan arus kas dengan rekap harian, mingguan, dan bulanan. Dashboard menampilkan pertumbuhan kekayaan bersih, alokasi aset dan utang, budget vs aktual, serta target Financial Freedom dan dana darurat.</p>
+          <p data-en="Asset, liability and cash flow tracker template with daily, weekly and monthly summaries. The dashboard shows net worth growth, asset and debt allocation, budget vs actual, plus Financial Freedom and emergency fund targets." class="card-desc">Template pelacak aset, utang, dan arus kas dengan rekap harian, mingguan, dan bulanan. Dashboard menampilkan pertumbuhan kekayaan bersih, alokasi aset dan utang, budget vs aktual, serta target Financial Freedom dan dana darurat.</p>
           <div class="card-tech">
             <span class="tech">Apps Script</span>
             <span class="tech">Google Sheets</span>
@@ -568,9 +582,9 @@
         </div>
         <div class="card-drawer">
           <div class="card-drawer-inner">
-            <p style="font-size:0.8rem;color:#505050;margin-bottom:12px;font-family:var(--font-mono)">Demo berisi data fiktif dan tersimpan hanya selama halaman terbuka. Coba ganti rekap Harian/Mingguan/Bulanan, tambah transaksi atau update saldo di tab Input, lalu lihat dashboard berubah. Tersedia bahasa ID/EN dan mode gelap.</p>
+            <p data-en="The demo uses fictional data and is kept only while the page is open. Switch between Daily/Weekly/Monthly summaries, add a transaction or update a balance in the Input tab, and watch the dashboard update. Available in ID/EN with dark mode." style="font-size:0.8rem;color:#505050;margin-bottom:12px;font-family:var(--font-mono)">Demo berisi data fiktif dan tersimpan hanya selama halaman terbuka. Coba ganti rekap Harian/Mingguan/Bulanan, tambah transaksi atau update saldo di tab Input, lalu lihat dashboard berubah. Tersedia bahasa ID/EN dan mode gelap.</p>
             <div class="drawer-actions">
-              <button class="drawer-close" onclick="closeCard(event,this)"><i class="ti ti-x"></i> Tutup</button>
+              <button class="drawer-close" onclick="closeCard(event,this)"><i class="ti ti-x"></i> <span data-en="Close">Tutup</span></button>
               <a class="drawer-demo-link" href="finance-tracker-demo.html" target="_blank" rel="noopener" onclick="event.stopPropagation()">
                 <i class="ti ti-external-link"></i> Open Live Demo
               </a>
@@ -599,7 +613,7 @@
           </div>
           <p class="card-title">M.A.V.I.S</p>
           <p class="card-acronym">Market Analysis &amp; Volatility Intelligence System</p>
-          <p class="card-desc">Bot sinyal crypto otomatis yang memindai 500+ koin, mendeteksi 10 chart pattern, konfirmasi Stochastic, dan integrasi CoinGlass funding rates. Ditenagai Claude Sonnet 4.</p>
+          <p data-en="Automated crypto signal bot that scans 500+ coins, detects 10 chart patterns, confirms with Stochastic and integrates CoinGlass funding rates. Powered by Claude Sonnet 4." class="card-desc">Bot sinyal crypto otomatis yang memindai 500+ koin, mendeteksi 10 chart pattern, konfirmasi Stochastic, dan integrasi CoinGlass funding rates. Ditenagai Claude Sonnet 4.</p>
           <div class="card-tech">
             <span class="tech">n8n</span>
             <span class="tech">Claude API</span>
@@ -620,7 +634,7 @@
             </div>
           </div>
           <p class="card-title">BTC DCA Investment Projection Tool</p>
-          <p class="card-desc">Simulasi investasi Bitcoin DCA dengan 3 skenario (Bull, Normal, Bear) — interaktif, denominasi IDR, proyeksi hingga 10 tahun dengan tabel monthly P&amp;L dan live chart.</p>
+          <p data-en="Bitcoin DCA investment simulation with 3 scenarios (Bull, Normal, Bear) — interactive, IDR-denominated, projecting up to 10 years with a monthly P&amp;L table and live chart." class="card-desc">Simulasi investasi Bitcoin DCA dengan 3 skenario (Bull, Normal, Bear) — interaktif, denominasi IDR, proyeksi hingga 10 tahun dengan tabel monthly P&amp;L dan live chart.</p>
           <div class="card-tech">
             <span class="tech">HTML/JS</span>
             <span class="tech">Chart.js</span>
@@ -629,9 +643,9 @@
         </div>
         <div class="card-drawer">
           <div class="card-drawer-inner">
-            <p style="font-size:0.8rem;color:#505050;margin-bottom:12px;font-family:var(--font-mono)">Interactive tool — buka langsung di browser</p>
+            <p data-en="Interactive tool — opens directly in your browser" style="font-size:0.8rem;color:#505050;margin-bottom:12px;font-family:var(--font-mono)">Interactive tool — buka langsung di browser</p>
             <div class="drawer-actions">
-              <button class="drawer-close" onclick="closeCard(event,this)"><i class="ti ti-x"></i> Tutup</button>
+              <button class="drawer-close" onclick="closeCard(event,this)"><i class="ti ti-x"></i> <span data-en="Close">Tutup</span></button>
               <a class="drawer-demo-link" href="btc-proyeksi-dca.html" target="_blank" rel="noopener" onclick="event.stopPropagation()">
                 <i class="ti ti-external-link"></i> Open BTC DCA Tool
               </a>
@@ -651,7 +665,7 @@
             </div>
           </div>
           <p class="card-title">Crypto Trading Plan Calculator</p>
-          <p class="card-desc">Kalkulator manajemen risiko trading multi-exchange dengan kalkulasi ukuran posisi, R:R ratio, dan perencanaan entry/exit. Dirancang untuk komersialisasi.</p>
+          <p data-en="Multi-exchange trading risk management calculator with position sizing, R:R ratio and entry/exit planning. Designed for commercialization." class="card-desc">Kalkulator manajemen risiko trading multi-exchange dengan kalkulasi ukuran posisi, R:R ratio, dan perencanaan entry/exit. Dirancang untuk komersialisasi.</p>
           <div class="card-tech">
             <span class="tech">Next.js</span>
             <span class="tech">Supabase</span>
@@ -661,9 +675,9 @@
         </div>
         <div class="card-drawer">
           <div class="card-drawer-inner">
-            <p style="font-size:0.8rem;color:#505050;margin-bottom:12px;font-family:var(--font-mono)">Interactive calculator — buka langsung di browser</p>
+            <p data-en="Interactive calculator — opens directly in your browser" style="font-size:0.8rem;color:#505050;margin-bottom:12px;font-family:var(--font-mono)">Interactive calculator — buka langsung di browser</p>
             <div class="drawer-actions">
-              <button class="drawer-close" onclick="closeCard(event,this)"><i class="ti ti-x"></i> Tutup</button>
+              <button class="drawer-close" onclick="closeCard(event,this)"><i class="ti ti-x"></i> <span data-en="Close">Tutup</span></button>
               <a class="drawer-demo-link" href="trading_calculator.html" target="_blank" rel="noopener" onclick="event.stopPropagation()">
                 <i class="ti ti-external-link"></i> Open Trading Calculator
               </a>
@@ -694,7 +708,7 @@
             </div>
           </div>
           <p class="card-title">YouTube Automation N8N</p>
-          <p class="card-desc">Pipeline produksi konten YouTube Shorts otomatis dengan dual-loop architecture (render → Drive → YouTube), FFmpeg video assembly, dan penjadwalan upload otomatis targeting US/EU prime time.</p>
+          <p data-en="Automated YouTube Shorts production pipeline with a dual-loop architecture (render → Drive → YouTube), FFmpeg video assembly and scheduled uploads targeting US/EU prime time." class="card-desc">Pipeline produksi konten YouTube Shorts otomatis dengan dual-loop architecture (render → Drive → YouTube), FFmpeg video assembly, dan penjadwalan upload otomatis targeting US/EU prime time.</p>
           <div class="card-tech">
             <span class="tech">n8n</span>
             <span class="tech">FFmpeg</span>
@@ -710,7 +724,7 @@
               </div>
             </div>
             <div class="drawer-actions">
-              <button class="drawer-close" onclick="closeCard(event,this)"><i class="ti ti-x"></i> Tutup</button>
+              <button class="drawer-close" onclick="closeCard(event,this)"><i class="ti ti-x"></i> <span data-en="Close">Tutup</span></button>
             </div>
           </div>
         </div>
@@ -769,6 +783,43 @@
   }
 </script>
 
+<script>
+(function () {
+  const root = document.documentElement;
+  const nodes = [...document.querySelectorAll('[data-en]')];
+  nodes.forEach(el => { el.dataset.id = el.textContent; });
+  const attrs = [];
+  document.querySelectorAll('*').forEach(el => [...el.attributes].forEach(a => {
+    if (a.name.startsWith('data-en-')) {
+      const name = a.name.slice(8);
+      attrs.push({ el, name, en: a.value, id: el.getAttribute(name) });
+    }
+  }));
+  const STATS = {
+    en: (p, d, c) => `<b>${p}</b> projects &nbsp;·&nbsp; <b>${d}</b> live demos &nbsp;·&nbsp; <b>${c}</b> categories`,
+    id: (p, d, c) => `<b>${p}</b> project &nbsp;·&nbsp; <b>${d}</b> live demo &nbsp;·&nbsp; <b>${c}</b> kategori`
+  };
+  const btns = [...document.querySelectorAll('.lang-toggle button')];
+  function setLang(lang) {
+    root.lang = lang;
+    nodes.forEach(el => { el.textContent = lang === 'en' ? el.dataset.en : el.dataset.id; });
+    attrs.forEach(a => a.el.setAttribute(a.name, lang === 'en' ? a.en : a.id));
+    btns.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === lang)));
+    const stats = document.getElementById('hero-stats');
+    if (stats) {
+      const p = document.querySelectorAll('.card').length;
+      const d = document.querySelectorAll('.drawer-demo-link, .drawer-demo-link-green').length;
+      const c = document.querySelectorAll('section.section').length;
+      stats.innerHTML = STATS[lang](p, d, c);
+    }
+    try { localStorage.setItem('pf-lang', lang); } catch (e) {}
+  }
+  let lang = 'en';
+  try { const saved = localStorage.getItem('pf-lang'); if (saved === 'id' || saved === 'en') lang = saved; } catch (e) {}
+  btns.forEach(b => b.addEventListener('click', () => setLang(b.dataset.lang)));
+  setLang(lang);
+})();
+</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 (function () {
@@ -806,12 +857,7 @@
   });
 
   /* ── Hero stats (dihitung dari isi halaman) ── */
-  const stats = document.getElementById('hero-stats');
-  if (stats) {
-    const demos = document.querySelectorAll('.drawer-demo-link, .drawer-demo-link-green').length;
-    const secs = document.querySelectorAll('section.section').length;
-    stats.innerHTML = `<b>${cards.length}</b> project &nbsp;·&nbsp; <b>${demos}</b> live demo &nbsp;·&nbsp; <b>${secs}</b> kategori`;
-  }
+  /* (dirender oleh skrip bahasa) */
 
   /* ── Reveal on scroll ── */
   const hero = document.querySelector('.hero');
