@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ivan Dwitama — Portfolio</title>
+<script>document.documentElement.classList.add('js')</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
@@ -226,16 +227,130 @@
     .section { padding: 2rem 0; }
     .grid { grid-template-columns: 1fr; }
   }
+
+  /* ══════════ 3D LIVE LAYER ══════════ */
+  body { overflow-x: hidden; }
+  #scene { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; display: block; pointer-events: none; transition: opacity .6s ease; }
+  .scene-veil { position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background: radial-gradient(ellipse 80% 70% at 60% 40%, transparent 0%, rgba(12,12,12,.35) 60%, rgba(12,12,12,.9) 100%); }
+  .scene-veil::after { content: ''; position: absolute; inset: 0; background: #0c0c0c; opacity: calc(var(--dim, 0) * .55); }
+  .no-3d #scene, .fx-off #scene { opacity: 0; }
+  .wrap { position: relative; z-index: 1; }
+
+  /* Hero */
+  .hero { min-height: 94vh; display: flex; flex-direction: column; justify-content: center; padding: 6rem 0 4.5rem; border-bottom: none; position: relative; touch-action: pan-y; cursor: grab; user-select: none; }
+  .hero.grabbing { cursor: grabbing; }
+  .hero > * { max-width: 520px; }
+  .hero-eyebrow { color: #6a6a6a; display: inline-flex; align-items: center; gap: 8px; }
+  .hero-eyebrow::before { content: ''; width: 22px; height: 1px; background: var(--accent-gold); }
+  .hero-name { font-size: clamp(2.7rem, 7.5vw, 4.8rem); letter-spacing: -0.035em; margin-bottom: .8rem; }
+  .hero-name span { background: linear-gradient(100deg, #8a6d2e 0%, #e8cf8f 35%, #c0a060 55%, #8a6d2e 100%); background-size: 220% auto;
+    -webkit-background-clip: text; background-clip: text; color: transparent; animation: shimmer 7s linear infinite; }
+  @keyframes shimmer { to { background-position: -220% center; } }
+  .hero-role { font-size: 1rem; color: #9a9a9a; margin-bottom: 1.2rem; }
+  .hero-stats { font-family: var(--font-mono); font-size: 11px; color: #5a5a5a; letter-spacing: .04em; min-height: 1em; }
+  .hero-stats b { color: var(--accent-gold); font-weight: 500; }
+  .tag { background: rgba(26,26,26,.7); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); color: #777; transition: color .2s, border-color .2s; }
+  .tag:hover { color: #c8c8c8; border-color: #3a3a3a; }
+  .hero-foot { position: absolute; left: 0; right: 0; bottom: 1.6rem; display: flex; align-items: center; justify-content: space-between; max-width: none; gap: 12px; }
+  .scroll-cue { font-family: var(--font-mono); font-size: 10px; letter-spacing: .15em; text-transform: uppercase; color: #555; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: color .2s; }
+  .scroll-cue:hover { color: #999; }
+  .scroll-cue i { animation: bob 2s ease-in-out infinite; }
+  @keyframes bob { 50% { transform: translateY(4px); } }
+  .hero-hint { font-family: var(--font-mono); font-size: 10px; color: #444; display: inline-flex; align-items: center; gap: 6px; }
+  .no-3d .hero-hint, .fx-off .hero-hint { visibility: hidden; }
+
+  /* Section headers */
+  .section { border-bottom-color: rgba(36,36,36,.6); scroll-margin-top: 60px; }
+  .section-header::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, #2a2a2a, transparent); }
+  .section-num { background: rgba(20,20,20,.7); }
+
+  /* Cards: glass + 3D tilt + glare */
+  .card {
+    position: relative;
+    --acc: #888;
+    background: rgba(20,20,20,.72);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    transform-style: preserve-3d;
+    transition: transform .35s cubic-bezier(.2,.7,.2,1), border-color .2s, background .2s, box-shadow .3s, opacity .7s ease, translate .7s cubic-bezier(.2,.7,.2,1);
+    will-change: transform;
+  }
+  .card.tilting { transition: transform .08s linear, border-color .2s, background .2s, box-shadow .3s, opacity .7s ease, translate .7s cubic-bezier(.2,.7,.2,1); }
+  .card::after { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity .3s;
+    background: radial-gradient(420px circle at var(--gx, 50%) var(--gy, 50%), rgba(255,255,255,.07), transparent 45%); }
+  .card:hover::after { opacity: 1; }
+  .card:hover { background: rgba(24,24,24,.82); border-color: color-mix(in srgb, var(--acc) 45%, #242424);
+    box-shadow: 0 22px 50px -24px color-mix(in srgb, var(--acc) 55%, transparent); }
+  .card.is-open { transform: none; background: rgba(28,28,28,.9); border-color: color-mix(in srgb, var(--acc) 35%, #404040); }
+  .card.is-open::after { opacity: 0; }
+  .card-icon { transition: transform .35s cubic-bezier(.2,.7,.2,1), box-shadow .3s; }
+  .card:hover .card-icon { transform: translateZ(30px) scale(1.06); box-shadow: 0 0 22px -4px color-mix(in srgb, var(--acc) 60%, transparent); }
+  .card-desc { color: #727272; }
+  .tech { background: rgba(28,28,28,.8); color: #666; }
+
+  /* Reveal on scroll (only when JS runs) */
+  .js .reveal { opacity: 0; translate: 0 26px; }
+  .js .reveal.in { opacity: 1; translate: 0 0; }
+  .js .section-header.reveal, .js .hero .reveal { transition: opacity .8s ease, translate .8s cubic-bezier(.2,.7,.2,1); }
+
+  /* Section nav */
+  .sec-nav { position: fixed; top: 14px; left: 50%; z-index: 20; display: flex; gap: 2px; padding: 4px;
+    background: rgba(16,16,16,.72); border: .5px solid #2a2a2a; border-radius: 999px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    transform: translate(-50%, -70px); opacity: 0; transition: transform .45s cubic-bezier(.2,.7,.2,1), opacity .3s; }
+  .sec-nav.show { transform: translate(-50%, 0); opacity: 1; }
+  .sec-nav a { font-family: var(--font-mono); font-size: 10.5px; color: #666; text-decoration: none; padding: 6px 12px; border-radius: 999px; display: flex; align-items: center; gap: 6px; transition: color .2s, background .2s; white-space: nowrap; }
+  .sec-nav a:hover { color: #bbb; }
+  .sec-nav a .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: .5; }
+  .sec-nav a.active { background: #222; color: #e0e0e0; }
+  .sec-nav a[data-k="finance"].active .dot { background: var(--accent-green); opacity: 1; }
+  .sec-nav a[data-k="trading"].active .dot { background: var(--accent-gold); opacity: 1; }
+  .sec-nav a[data-k="others"].active .dot { background: var(--accent-blue); opacity: 1; }
+
+  /* 3D toggle */
+  .fx-toggle { position: fixed; right: 16px; bottom: 16px; z-index: 20; font-family: var(--font-mono); font-size: 10.5px; color: #888;
+    background: rgba(16,16,16,.75); border: .5px solid #2a2a2a; border-radius: 999px; padding: 7px 12px; cursor: pointer;
+    display: flex; align-items: center; gap: 6px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); transition: color .2s, border-color .2s; }
+  .fx-toggle:hover { color: #ddd; border-color: #444; }
+  .fx-toggle i { font-size: 14px; color: var(--accent-gold); }
+  .fx-off .fx-toggle i { color: #555; }
+
+  @media (max-width: 820px) {
+    .hero { justify-content: flex-end; min-height: 92vh; padding-bottom: 5rem; }
+    .hero > * { max-width: none; }
+    .hero-hint { display: none; }
+    .sec-nav a .lbl { display: none; }
+    .sec-nav a { padding: 6px 10px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-name span, .scroll-cue i { animation: none; }
+    .js .reveal { opacity: 1; translate: none; }
+    .card { transform: none !important; }
+  }
 </style>
 </head>
 <body>
+<canvas id="scene" aria-hidden="true"></canvas>
+<div class="scene-veil" aria-hidden="true"></div>
+
+<nav class="sec-nav" id="sec-nav" aria-label="Navigasi section">
+  <a href="#finance" data-k="finance"><span class="dot"></span>01<span class="lbl"> Finance</span></a>
+  <a href="#trading" data-k="trading"><span class="dot"></span>02<span class="lbl"> Trading</span></a>
+  <a href="#others" data-k="others"><span class="dot"></span>03<span class="lbl"> Others</span></a>
+</nav>
+
+<button class="fx-toggle" id="fx-toggle" type="button" aria-pressed="true" title="Matikan / nyalakan animasi 3D">
+  <i class="ti ti-cube" aria-hidden="true"></i><span id="fx-label">3D on</span>
+</button>
+
 <div class="wrap">
 
   <!-- Hero -->
   <header class="hero">
     <p class="hero-eyebrow">Portfolio</p>
     <h1 class="hero-name">Ivan <span>Dwitama</span></h1>
-    <p class="hero-role"> Finance &amp; AI Automation</p>
+    <p class="hero-role">Finance &amp; AI Automation</p>
+    <p class="hero-stats" id="hero-stats"></p>
     <div class="tags-row">
       <span class="tag">Internal Audit</span>
       <span class="tag">Finance</span>
@@ -244,10 +359,14 @@
       <span class="tag">n8n</span>
       <span class="tag">SAP · Odoo</span>
     </div>
+    <div class="hero-foot">
+      <a class="scroll-cue" href="#finance"><i class="ti ti-arrow-down" aria-hidden="true"></i> Lihat project</a>
+      <span class="hero-hint"><i class="ti ti-rotate-360" aria-hidden="true"></i> Geser untuk memutar objek 3D</span>
+    </div>
   </header>
 
   <!-- ── FINANCE ── -->
-  <section class="section">
+  <section class="section" id="finance">
     <div class="section-header">
       <span class="section-num">01</span>
       <h2 class="section-title">Finance</h2>
@@ -464,7 +583,7 @@
   </section>
 
   <!-- ── INVESTING ── -->
-  <section class="section">
+  <section class="section" id="trading">
     <div class="section-header">
       <span class="section-num">02</span>
       <h2 class="section-title">Trading and Investing</h2>
@@ -557,7 +676,7 @@
   </section>
 
   <!-- ── OTHERS ── -->
-  <section class="section">
+  <section class="section" id="others">
     <div class="section-header">
       <span class="section-num">03</span>
       <h2 class="section-title">Others</h2>
@@ -648,6 +767,299 @@
       });
     }
   }
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function () {
+  const root = document.documentElement;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const fine = matchMedia('(pointer: fine)').matches;
+  const ACC = { finance: '#4a9e6a', invest: '#c0a060', other: '#6070c0' };
+
+  /* ── Card category, tilt, glare, scene focus ── */
+  const cards = [...document.querySelectorAll('.card')];
+  cards.forEach(card => {
+    const ic = card.querySelector('.card-icon');
+    const cat = ic && ic.classList.contains('icon-finance') ? 'finance'
+              : ic && ic.classList.contains('icon-invest') ? 'invest' : 'other';
+    card.dataset.cat = cat;
+    card.style.setProperty('--acc', ACC[cat]);
+
+    card.addEventListener('pointerenter', () => window.pfSceneFocus && window.pfSceneFocus(cat));
+    card.addEventListener('pointerleave', () => {
+      window.pfSceneFocus && window.pfSceneFocus(null);
+      card.classList.remove('tilting');
+      card.style.setProperty('--rx', '0deg'); card.style.setProperty('--ry', '0deg');
+    });
+    if (!fine || reduce) return;
+    card.addEventListener('pointermove', e => {
+      if (card.classList.contains('is-open')) return;
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+      card.classList.add('tilting');
+      card.style.setProperty('--rx', ((0.5 - y) * 9).toFixed(2) + 'deg');
+      card.style.setProperty('--ry', ((x - 0.5) * 11).toFixed(2) + 'deg');
+      card.style.setProperty('--gx', (x * 100).toFixed(1) + '%');
+      card.style.setProperty('--gy', (y * 100).toFixed(1) + '%');
+    });
+  });
+
+  /* ── Hero stats (dihitung dari isi halaman) ── */
+  const stats = document.getElementById('hero-stats');
+  if (stats) {
+    const demos = document.querySelectorAll('.drawer-demo-link, .drawer-demo-link-green').length;
+    const secs = document.querySelectorAll('section.section').length;
+    stats.innerHTML = `<b>${cards.length}</b> project &nbsp;·&nbsp; <b>${demos}</b> live demo &nbsp;·&nbsp; <b>${secs}</b> kategori`;
+  }
+
+  /* ── Reveal on scroll ── */
+  const hero = document.querySelector('.hero');
+  [...hero.children].forEach((el, i) => { if (!el.classList.contains('hero-foot')) { el.classList.add('reveal'); el.style.transitionDelay = (120 + i * 90) + 'ms'; } });
+  document.querySelectorAll('.section-header').forEach(el => el.classList.add('reveal'));
+  document.querySelectorAll('.grid').forEach(g => [...g.children].forEach((c, i) => { c.classList.add('reveal'); c.style.transitionDelay = (i % 3) * 80 + 'ms'; }));
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('in'); io.unobserve(e.target);
+      setTimeout(() => { e.target.style.transitionDelay = ''; }, 1200);
+    }
+  }), { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  /* ── Section nav ── */
+  const nav = document.getElementById('sec-nav');
+  const links = [...nav.querySelectorAll('a')];
+  const sio = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) links.forEach(a => a.classList.toggle('active', a.dataset.k === e.target.id));
+  }), { rootMargin: '-45% 0px -50% 0px' });
+  document.querySelectorAll('section.section').forEach(s => sio.observe(s));
+
+  let scrollP = 0;
+  function onScroll() {
+    scrollP = Math.min(scrollY / innerHeight, 3);
+    nav.classList.toggle('show', scrollP > 0.6);
+    root.style.setProperty('--dim', Math.min(scrollP / 1.1, 1).toFixed(3));
+  }
+  addEventListener('scroll', onScroll, { passive: true }); onScroll();
+
+  /* ── 3D toggle ── */
+  const toggle = document.getElementById('fx-toggle');
+  const label = document.getElementById('fx-label');
+  let enabled = true;
+  try { if (localStorage.getItem('pf-3d') === 'off') enabled = false; } catch (e) {}
+  function applyToggle() {
+    root.classList.toggle('fx-off', !enabled);
+    toggle.setAttribute('aria-pressed', String(enabled));
+    label.textContent = enabled ? '3D on' : '3D off';
+  }
+  applyToggle();
+
+  /* ══════════ THREE.JS SCENE ══════════ */
+  const canvas = document.getElementById('scene');
+  let renderer = null;
+  if (typeof THREE !== 'undefined') {
+    try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' }); } catch (e) { renderer = null; }
+  }
+  if (!renderer) { root.classList.add('no-3d'); toggle.hidden = true; return; }
+
+  const small = innerWidth < 760;
+  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, small ? 1.5 : 1.75));
+  renderer.setClearColor(0x000000, 0);
+
+  const scene = new THREE.Scene();
+  scene.fog = new THREE.FogExp2(0x0c0c0c, 0.042);
+  const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 120);
+  camera.position.set(0, 0, 10);
+
+  const C = { finance: 0x4a9e6a, invest: 0xc0a060, other: 0x6070c0 };
+
+  // soft round sprite for points
+  const dot = (() => {
+    const c = document.createElement('canvas'); c.width = c.height = 64;
+    const g = c.getContext('2d'); const grd = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+    grd.addColorStop(0, 'rgba(255,255,255,1)'); grd.addColorStop(.35, 'rgba(255,255,255,.55)'); grd.addColorStop(1, 'rgba(255,255,255,0)');
+    g.fillStyle = grd; g.fillRect(0, 0, 64, 64);
+    return new THREE.CanvasTexture(c);
+  })();
+
+  // lights
+  scene.add(new THREE.AmbientLight(0xffffff, 0.22));
+  const keyL = new THREE.DirectionalLight(0xfff1d0, 1.15); keyL.position.set(4, 5, 6); scene.add(keyL);
+  const lights = {
+    finance: new THREE.PointLight(C.finance, 2.0, 22),
+    other: new THREE.PointLight(C.other, 2.0, 22),
+    invest: new THREE.PointLight(C.invest, 1.2, 22)
+  };
+  lights.finance.position.set(-5, -2, 4); lights.other.position.set(5, -3, -1); lights.invest.position.set(0, 4, 3);
+  Object.values(lights).forEach(l => { l.userData.base = l.intensity; scene.add(l); });
+
+  const rig = new THREE.Group(); scene.add(rig);
+  const spin = new THREE.Group(); rig.add(spin);
+
+  // core: faceted gold
+  const core = new THREE.Mesh(
+    new THREE.IcosahedronGeometry(1.2, 0),
+    new THREE.MeshStandardMaterial({ color: C.invest, metalness: 0.88, roughness: 0.26, flatShading: true, emissive: 0x2a1f08, emissiveIntensity: 0.7 })
+  );
+  spin.add(core);
+  const innerWire = new THREE.LineSegments(
+    new THREE.EdgesGeometry(new THREE.OctahedronGeometry(0.62, 0)),
+    new THREE.LineBasicMaterial({ color: 0xe8cf8f, transparent: true, opacity: 0.0 })
+  );
+  spin.add(innerWire);
+
+  // lattice shell
+  const shellGeo = new THREE.IcosahedronGeometry(2.0, 1);
+  const shell = new THREE.Group();
+  shell.add(new THREE.LineSegments(new THREE.EdgesGeometry(shellGeo), new THREE.LineBasicMaterial({ color: C.invest, transparent: true, opacity: 0.2 })));
+  shell.add(new THREE.Points(shellGeo, new THREE.PointsMaterial({ color: 0xe8cf8f, size: 0.13, map: dot, transparent: true, opacity: 0.9, depthWrite: false, blending: THREE.AdditiveBlending })));
+  spin.add(shell);
+
+  // three orbit rings = three portfolio categories
+  function makeRing(key, radius, count, tiltX, tiltZ, speed, size) {
+    const pos = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const r = radius + (Math.random() - 0.5) * 0.6 * Math.random();
+      pos[i * 3] = Math.cos(a) * r; pos[i * 3 + 1] = (Math.random() - 0.5) * 0.16; pos[i * 3 + 2] = Math.sin(a) * r;
+    }
+    const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    const mat = new THREE.PointsMaterial({ color: C[key], size, map: dot, transparent: true, opacity: 0.7, depthWrite: false, blending: THREE.AdditiveBlending });
+    const pts = new THREE.Points(geo, mat);
+    const holder = new THREE.Group(); holder.rotation.set(tiltX, 0, tiltZ); holder.add(pts); spin.add(holder);
+    return { key, pts, mat, speed, base: 0.7, boost: 0, size };
+  }
+  const k = small ? 0.5 : 1;
+  const rings = [
+    makeRing('finance', 2.85, Math.round(520 * k), 1.18, 0.32, 0.22, 0.09),
+    makeRing('invest',  3.55, Math.round(620 * k), 1.48, -0.22, -0.16, 0.085),
+    makeRing('other',   4.25, Math.round(700 * k), 0.98, -0.5, 0.11, 0.08)
+  ];
+
+  // orbiting data nodes
+  const orbiters = [];
+  const oKeys = ['finance', 'invest', 'other', 'finance', 'invest', 'other'];
+  oKeys.forEach((key, i) => {
+    const m = new THREE.Mesh(new THREE.OctahedronGeometry(0.11 + (i % 3) * 0.03, 0),
+      new THREE.MeshStandardMaterial({ color: C[key], metalness: 0.6, roughness: 0.3, emissive: C[key], emissiveIntensity: 0.35, flatShading: true }));
+    m.userData = { r: 2.6 + i * 0.35, sp: 0.35 + (i % 3) * 0.12, ph: i * 1.7, tilt: (i - 2.5) * 0.28 };
+    spin.add(m); orbiters.push(m);
+  });
+
+  // starfield
+  const starN = small ? 700 : 1500;
+  const sp = new Float32Array(starN * 3);
+  for (let i = 0; i < starN; i++) {
+    const r = 14 + Math.random() * 30, th = Math.random() * Math.PI * 2, ph = Math.acos(2 * Math.random() - 1);
+    sp[i * 3] = r * Math.sin(ph) * Math.cos(th); sp[i * 3 + 1] = r * Math.sin(ph) * Math.sin(th); sp[i * 3 + 2] = r * Math.cos(ph);
+  }
+  const starGeo = new THREE.BufferGeometry(); starGeo.setAttribute('position', new THREE.BufferAttribute(sp, 3));
+  const stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0x9a9a9a, size: 0.12, map: dot, transparent: true, opacity: 0.55, depthWrite: false }));
+  scene.add(stars);
+
+  // layout
+  let baseX = 0, baseY = 0;
+  function resize() {
+    const w = innerWidth, h = innerHeight;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h; camera.updateProjectionMatrix();
+    const wide = w > 820 && w / h > 1.05;
+    baseX = wide ? 2.7 : 0; baseY = wide ? 0.1 : 1.55;
+    rig.scale.setScalar(wide ? 1 : 0.8);
+    if (!running) renderOnce();
+  }
+
+  // interaction
+  const pointer = { x: 0, y: 0 }, sm = { x: 0, y: 0 };
+  let dragging = false, lx = 0, ly = 0, vY = 0, vX = 0, rotY = 0, rotX = 0;
+  addEventListener('pointermove', e => {
+    pointer.x = e.clientX / innerWidth * 2 - 1; pointer.y = e.clientY / innerHeight * 2 - 1;
+    if (dragging) { vY += (e.clientX - lx) * 0.0011; vX += (e.clientY - ly) * 0.0008; lx = e.clientX; ly = e.clientY; }
+  }, { passive: true });
+  hero.addEventListener('pointerdown', e => {
+    if (e.target.closest('a,button')) return;
+    dragging = true; lx = e.clientX; ly = e.clientY; hero.classList.add('grabbing');
+  });
+  const endDrag = () => { dragging = false; hero.classList.remove('grabbing'); };
+  addEventListener('pointerup', endDrag); addEventListener('pointercancel', endDrag);
+
+  let focusKey = null;
+  window.pfSceneFocus = key => { focusKey = key; if (!running) renderOnce(); };
+
+  // loop
+  const clock = new THREE.Clock();
+  let running = false, raf = 0, t = 0;
+  const lerp = (a, b, f) => a + (b - a) * f;
+
+  function update(dt) {
+    t += dt;
+    sm.x = lerp(sm.x, pointer.x, 0.05); sm.y = lerp(sm.y, pointer.y, 0.05);
+    vY *= 0.94; vX *= 0.94;
+    rotY += dt * 0.12 + vY; rotX = (rotX + vX) * 0.985;
+    spin.rotation.y = rotY + sm.x * 0.35;
+    spin.rotation.x = rotX + sm.y * 0.22;
+
+    core.rotation.x += dt * 0.22; core.rotation.y += dt * 0.31;
+    innerWire.rotation.y -= dt * 0.6; innerWire.rotation.z += dt * 0.3;
+    shell.rotation.y -= dt * 0.06; shell.rotation.z += dt * 0.02;
+    const pulse = 1 + Math.sin(t * 1.4) * 0.025;
+    core.scale.setScalar(pulse);
+
+    rings.forEach(r => {
+      const on = focusKey === r.key, dim = focusKey && !on;
+      r.boost = lerp(r.boost, on ? 1 : 0, 0.07);
+      r.mat.opacity = lerp(r.mat.opacity, dim ? 0.22 : (on ? 1 : r.base), 0.07);
+      r.mat.size = r.size * (1 + r.boost * 0.6);
+      r.pts.rotation.y += dt * r.speed * (1 + r.boost * 3);
+    });
+    Object.entries(lights).forEach(([key, l]) => {
+      l.intensity = lerp(l.intensity, l.userData.base * (focusKey === key ? 2.4 : focusKey ? 0.6 : 1), 0.06);
+    });
+    innerWire.material.opacity = lerp(innerWire.material.opacity, focusKey ? 0.7 : 0.25, 0.05);
+
+    orbiters.forEach(o => {
+      const d = o.userData, a = t * d.sp + d.ph;
+      o.position.set(Math.cos(a) * d.r, Math.sin(a * 1.3) * 0.6 + Math.sin(a) * d.tilt * d.r * 0.3, Math.sin(a) * d.r);
+      o.rotation.x += dt; o.rotation.y += dt * 1.3;
+    });
+
+    // scroll choreography: hero -> centered, receding backdrop
+    const s = Math.min(scrollP / 1.15, 1), e = s * s * (3 - 2 * s);
+    rig.position.x = lerp(rig.position.x, baseX * (1 - e), 0.08);
+    rig.position.y = lerp(rig.position.y, baseY * (1 - e) + e * 0.3, 0.08);
+    rig.position.z = lerp(rig.position.z, -e * 3.2, 0.08);
+
+    camera.position.x = lerp(camera.position.x, sm.x * 0.7, 0.04);
+    camera.position.y = lerp(camera.position.y, -sm.y * 0.45, 0.04);
+    camera.lookAt(0, 0, 0);
+    stars.rotation.y = t * 0.008; stars.rotation.x = t * 0.003;
+  }
+  function renderOnce() { update(0); renderer.render(scene, camera); }
+  function frame() {
+    if (!running) return;
+    update(Math.min(clock.getDelta(), 0.05));
+    renderer.render(scene, camera);
+    raf = requestAnimationFrame(frame);
+  }
+  function start() {
+    if (running || !enabled || reduce || document.hidden) return;
+    running = true; clock.getDelta(); raf = requestAnimationFrame(frame);
+  }
+  function stop() { running = false; cancelAnimationFrame(raf); }
+
+  addEventListener('resize', resize);
+  document.addEventListener('visibilitychange', () => document.hidden ? stop() : start());
+  toggle.addEventListener('click', () => {
+    enabled = !enabled; applyToggle();
+    try { localStorage.setItem('pf-3d', enabled ? 'on' : 'off'); } catch (e) {}
+    enabled ? start() : stop();
+  });
+
+  resize();
+  rig.position.set(baseX, baseY, 0);
+  renderOnce();
+  start();
+})();
 </script>
 </body>
 </html>
